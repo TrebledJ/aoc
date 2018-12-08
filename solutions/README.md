@@ -1,3 +1,0 @@
-Solutions may come in a variety of languages.
-
-A comment is added at the top of each file stating the running time of the code. Regarding the consistency of timing, I start the timer after the file is opened, and stop it right before printing output. This is to ensure a consistency both between languages and attention only to the algorithmic speed. (E.g. the Python IDLE prints output at an insanely slow speed, versus C++'s relatively fast cout).
