@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
 	
-	ifstream in("/Users/JLAW/Desktop/aoc/input/input9.txt");
+	ifstream in("input.txt");
 	
 	if (!in.is_open())
 	{

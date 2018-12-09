@@ -1,4 +1,4 @@
-with open('/Users/Technist/Desktop/aoc/input/input15.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     data = f.read().splitlines()
 
 # get first line

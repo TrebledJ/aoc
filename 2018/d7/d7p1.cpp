@@ -28,7 +28,7 @@ bool find(const vector<T> &vec, const T &element)
 
 int main()
 {
-	ifstream file("/Users/JLAW/Desktop/aoc/input/input13.txt");
+	ifstream file("input.txt");
 	//	ifstream file("/Users/JLAW/Desktop/aoc/input/input13 copy.txt");
 	if (!file.is_open())
 	{

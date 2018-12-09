@@ -2,7 +2,7 @@ import re
 import numpy as np
 
 
-with open('aoc/input/input7.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     data = f.read().splitlines()
 
 data = sorted(data)

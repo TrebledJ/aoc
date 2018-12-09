@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-	ifstream file("/Users/Technist/Desktop/aoc/input/input3.txt");
+	ifstream file("input.txt");
 	if (!file.is_open())
 	{
 		cout << "File couldn't open.\n";

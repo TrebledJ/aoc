@@ -2,7 +2,7 @@
 
 import time as tm
 
-with open('../input/input1.txt') as f:
+with open('input.txt') as f:
     data = f.read().splitlines()
 start = tm.time()
 

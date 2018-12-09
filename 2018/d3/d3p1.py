@@ -3,8 +3,7 @@
 import time as tm
 import numpy as np
 
-##with open('../input/input5.txt') as f:
-with open('/Users/JLAW/Desktop/aoc/input/input5.txt') as f:
+with open('input.txt') as f:
     data = f.read().splitlines()
 start = tm.time()
 

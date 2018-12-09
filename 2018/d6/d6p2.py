@@ -1,6 +1,6 @@
 import numpy as np
 
-with open('/Users/JLAW/Desktop/aoc/input/input11.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     data = f.read().splitlines()
 
 data = list(map(lambda s: tuple(map(int, s.split(', '))), data))

@@ -26,7 +26,7 @@ int diff(const string &a, const string &b)
 
 int main()
 {
-	ifstream file("/Users/Technist/Desktop/aoc/input/input4.txt");
+	ifstream file("input.txt");
 	if (!file.is_open())
 	{
 		cout << "File couldn't open.\n";

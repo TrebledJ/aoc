@@ -2,7 +2,7 @@
 
 import time as tm
 
-with open('../input/input2.txt') as f:
+with open('input.txt') as f:
     data = list(map(int,f.read().splitlines()))
 ##data=[1000000, -999999]   ## 2 s
 start = tm.time()
