@@ -1,27 +1,17 @@
-import qualified Data.HashSet as HashSet
+import qualified Data.HashSet as S
 
 magicNumber = 2020
 
-
-solve :: HashSet.HashSet Int -> Maybe (Int, Int)
-solve hs = foldr go Nothing hs
-  where go _ (Just n) = Just n
-        go x Nothing =  if HashSet.member (magicNumber - x) hs && 2*x /= magicNumber
-                        then Just (x, magicNumber - x)
-                        else Nothing
-
-
 main :: IO ()
-main = do
-  set <- HashSet.fromList . map read . lines <$> readFile "input.txt"
-  case solve set of
-    Just (a, b) -> do
-      putStrLn $ "Numbers: " ++ show a ++ " " ++ show b
-      putStr "Sum: "
-      print $ a + b
-      putStr "Answer: "
-      print $ a * b
-    Nothing -> do
-      print "Solution not found. :("
-  
-  return ()
+main = readFile "input.txt" >>= print . solve
+
+solve :: String -> Int
+solve = uncurry (*) . findNumbers . map read . lines
+
+findNumbers :: [Int] -> (Int, Int)
+findNumbers nums = find nums
+  where hs = S.fromList nums
+        find [] = (0, 0)
+        find (x:xs) = if S.member (magicNumber - x) hs && 2*x /= magicNumber
+                      then (x, magicNumber - x)
+                      else find xs

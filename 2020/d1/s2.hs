@@ -1,31 +1,21 @@
-import qualified Data.HashSet as HashSet
-
+import qualified Data.HashSet as S
 
 magicNumber = 2020
 
-
-findNThatSumTo :: Int -> Int -> HashSet.HashSet Int -> Maybe [Int]
-findNThatSumTo n sum hs = foldr go Nothing hs
-  where go _ j@(Just _) = j
-        go x Nothing
-          | n == 2 =  if HashSet.member (sum - x) hs && 2*x /= sum
-                      then Just [x, sum - x]
-                      else Nothing
-          | n > 2 = (x:) <$> findNThatSumTo (n - 1) (sum - x) (HashSet.delete x hs)
-
-
 main :: IO ()
-main = do
-  set <- HashSet.fromList . map read . lines <$> readFile "input.txt"
-  case findNThatSumTo 4 magicNumber set of
-    Just xs -> do
-      putStr "Numbers: "
-      print xs
-      putStr "Sum: "
-      print $ sum xs
-      putStr "Answer: "
-      print $ product xs
-    Nothing -> do
-      print "Solution not found. :("
-  
-  return ()
+main = readFile "input.txt" >>= print . solve
+
+solve :: String -> Int
+solve = product . findNThatSumTo 3 magicNumber . S.fromList . map read . lines
+
+findNThatSumTo :: Int -> Int -> S.HashSet Int -> [Int]
+findNThatSumTo n sum hs = find $ S.toList hs
+  where find [] = []
+        find (x:xs)
+          | n == 2  = if S.member (sum - x) hs && 2*x /= sum
+                      then [x, sum - x]
+                      else find xs
+          | n > 2   = if length sub == n - 1 
+                      then x:sub 
+                      else find xs
+          where sub = findNThatSumTo (n - 1) (sum - x) (S.delete x hs)

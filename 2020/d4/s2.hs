@@ -3,38 +3,30 @@ import qualified Data.Map.Strict as M
 import Data.List.Split
 import Data.Char
 
-
 type Passport = M.Map String String
 
 requirements = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 eyeColors = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
 
-
 main :: IO ()
-main = solve <$> readFile "input.txt" >>= print
-
+main = readFile "input.txt" >>= print . solve
 
 solve :: String -> Int
 solve = length . filter isValid . parse
-
 
 isValid :: Passport -> Bool
 isValid pp = exists && validFields
   where exists = all (`M.member` pp) requirements
         validFields = all (uncurry isValidField) $ M.assocs pp
 
-
 parse :: String -> [Passport]
 parse = map (M.fromList . map (fmap (drop 1) . break (==':')) . splitOneOf " \n") . splitOn "\n\n"
-
 
 between :: Int -> Int -> Int -> Bool
 between a b v = a <= v && v <= b
 
-
 isHex :: Char -> Bool
 isHex = (`elem` "0123456789abcdef")
-
 
 isValidField :: String -> String -> Bool
 isValidField f s
