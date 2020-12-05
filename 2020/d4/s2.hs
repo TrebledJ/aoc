@@ -10,8 +10,27 @@ requirements = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 eyeColors = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
 
 
+main :: IO ()
+main = solve <$> readFile "input.txt" >>= print
+
+
+solve :: String -> Int
+solve = length . filter isValid . parse
+
+
+isValid :: Passport -> Bool
+isValid pp = exists && validFields
+  where exists = all (`M.member` pp) requirements
+        validFields = all (uncurry isValidField) $ M.assocs pp
+
+
+parse :: String -> [Passport]
+parse = map (M.fromList . map (fmap (drop 1) . break (==':')) . splitOneOf " \n") . splitOn "\n\n"
+
+
 between :: Int -> Int -> Int -> Bool
 between a b v = a <= v && v <= b
+
 
 isHex :: Char -> Bool
 isHex = (`elem` "0123456789abcdef")
@@ -38,20 +57,3 @@ isValidField f s
   where len = length s
         r = read s :: Int
         d n = len == n && all isDigit s
-
-
-isValid :: Passport -> Bool
-isValid pp = exists && validFields
-  where exists = all (`M.member` pp) requirements
-        validFields = all (uncurry isValidField) $ M.assocs pp
-
-
-parse :: String -> [Passport]
-parse s = map (M.fromList . map (fmap (drop 1) . break (==':')) . splitOneOf " \n") $ splitOn "\n\n" s
-
-
-main :: IO ()
-main = do
-  text <- readFile "input.txt"
-  print $ length $ filter isValid $ parse text
-  return ()
