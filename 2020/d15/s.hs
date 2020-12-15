@@ -27,12 +27,10 @@ solve xs = num $ foldl solveIter (preprocess xs) [length xs .. query-1]
 
 preprocess :: [Int] -> State
 preprocess nums = preprocess' nums nullState 1
-  where preprocess' [x] s _ = State {num=x, memory=memory s}  -- Save number but don't save into memory.
+  where preprocess' [x] s _ = State {num=x, memory=memory s}  -- Register last number but don't save into memory.
         preprocess' (x:xs) s i = preprocess' xs nextState (i+1)
           where nextState = State {num=x, memory=M.insert x i $ memory s}
 
 solveIter :: State -> Int -> State
-solveIter State{num=n, memory=mem} turn
-  | M.member n mem      = State {num=turn - (mem M.! n), memory=newMem} -- n is owold guy.
-  | otherwise           = State {num=0, memory=newMem} -- n is a neuwu guy.
-  where newMem = M.insert n turn mem
+solveIter State{num=n, memory=mem} turn = State { memory = M.insert n turn mem
+                                                , num = if M.member n mem then turn - mem M.! n else 0}
