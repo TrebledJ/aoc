@@ -12,9 +12,9 @@ main :: IO ()
 main = readFile "input.txt" >>= print . solve . Spl.splitOn "," . last . lines
 
 solve :: [String] -> Integer
-solve xs = (+1) $ fst $ crt $ map (fmap read) $ filter ((/= "x") . snd) $ zip [-1, -2..(-1000)] xs
+solve = (+1) . fst . crt . map (fmap read) . filter ((/= "x") . snd) . zip [-1, -2..(-1000)]
 
--- Chinese Remainder Theorem.
+-- Chinese Remainder Theorem: https://stackoverflow.com/a/35529381/10239789.
 crt :: (Integral a, Foldable t) => t (a, a) -> (a, a)
 crt = foldr go (0, 1)
   where
@@ -23,11 +23,10 @@ crt = foldr go (0, 1)
         r = r2 + m2 * (r1 - r2) * (m2 `inv` m1)
         m = m2 * m1
 
-    -- Modular Inverse
+    -- Modular Inverse.
     a `inv` m = let (_, i, _) = gcd a m in i `mod` m
 
     -- Extended Euclidean Algorithm.
     gcd 0 b = (b, 0, 1)
     gcd a b = (g, t - (b `div` a) * s, s)
       where (g, s, t) = gcd (b `mod` a) a
-
