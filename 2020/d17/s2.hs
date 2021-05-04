@@ -1,7 +1,7 @@
 -- Uses vector for O(1) lookup.
 import           Control.Monad.State
+import           Data.List           (intercalate)
 import qualified Data.Vector         as V
-import Data.List
 
 data Grid = Grid {
   values    :: V.Vector Bool,
@@ -63,7 +63,7 @@ solve = do
   g <- get
   put $ Grid {
       values=(V.imap (\i active ->
-          let c = countActiveNeighbours g (g `indexToPoint` i) 
+          let c = countActiveNeighbours g (g `indexToPoint` i)
           in if active  then c == 2 || c == 3
                         else c == 3
         ) $ values g),
