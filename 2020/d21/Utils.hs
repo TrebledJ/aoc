@@ -1,8 +1,19 @@
+module Utils
+  ( Ingredient
+  , Allergen
+  , Food(..)
+  , makeAllergenMap
+  , ingredientSet
+  , allergenSet
+  , parseD21
+  ) where
+
 import qualified Data.HashSet                  as S
 import           Data.List
 import qualified Data.Map.Strict               as M
 import           Text.Parsec
 import           Text.Parsec.String
+
 
 type Ingredient = String
 type Allergen = String
@@ -12,21 +23,6 @@ data Food = Food
   }
   deriving Show
 
-main = do
-  txt <- readFile "input.txt"
-  case parse d21 "" txt of
-    Left  err -> print err
-    Right fs  -> do
-      let is = ingredientSet fs
-          as = allergenSet fs
-
-      putStrLn $ solve fs is as
-
-solve :: [Food] -> S.HashSet Ingredient -> S.HashSet Allergen -> String
-solve fs is as = intercalate "," . map snd . sort $ M.toList algMap
- where
-  nonAllergen = is `S.difference` S.fromList (M.elems algMap)
-  algMap      = makeAllergenMap fs is as
 
 -- We assume that a solution (allergen -> ingredient mapping) exists.
 makeAllergenMap
@@ -64,6 +60,11 @@ ingredientSet = S.unions . map (S.fromList . ingredients)
 
 allergenSet :: [Food] -> S.HashSet Allergen
 allergenSet = S.unions . map (S.fromList . allergens)
+
+parseD21 :: String -> [Food]
+parseD21 s = case parse d21 "" s of
+  Left  err -> error $ show err
+  Right fs  -> fs
 
 d21 :: Parser [Food]
 d21 = food `sepBy1` newline
