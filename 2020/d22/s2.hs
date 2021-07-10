@@ -3,9 +3,7 @@ import           Text.Parsec.String
 
 type Deck = [Int]
 
-main = do
-  txt <- readFile "input.txt"
-  print $ eval . stepUntilFinish $ parseD22 txt
+main = readFile "input.txt" >>= print . eval . stepUntilFinish . parseD22
 
 stepUntilFinish :: (Deck, Deck) -> (Deck, Deck)
 stepUntilFinish ds = stepUntilFinishImpl ds []

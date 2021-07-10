@@ -3,9 +3,7 @@ import           Text.Parsec.String
 
 type Deck = [Int]
 
-main = do
-  txt <- readFile "input.txt"
-  print $ run (parseD22 txt)
+main = readFile "input.txt" >>= print . run . parseD22
 
 run :: (Deck, Deck) -> Int
 run ds = if null p1 || null p2 then eval next else run next
