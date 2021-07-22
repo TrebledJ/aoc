@@ -1,1 +1,9 @@
+# Ignore files without dots (typically executables).
+*
+!/**/
+!*.*
+
 .vscode/
+*.hi
+*.o
+*.DS_Store
