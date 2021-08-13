@@ -27,6 +27,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
 
 executable d25
@@ -37,8 +38,24 @@ executable d25
   hs-source-dirs:
       app
       src
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -O3 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , d25
+    , hspec
+  default-language: Haskell2010
+
+test-suite d25-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      UtilsSpec
+      Paths_d25
+  hs-source-dirs:
+      test
+  ghc-options: -O3 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , d25
+    , hspec
   default-language: Haskell2010
