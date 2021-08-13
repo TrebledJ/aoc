@@ -1,4 +1,4 @@
-name:                d24
+name:                d25
 version:             0.1.0.0
 github:              "TrebledJ/aoc"
 license:             BSD3
@@ -8,27 +8,21 @@ copyright:           "2021 TrebledJ"
 
 extra-source-files: []
 
-description:         Day 24 of my AOC 2020 solutions.
+description:         Day 25 of my AOC 2020 solutions.
 
 dependencies:
 - base >= 4.7 && < 5
-- unordered-containers >= 0.2
-- hashable >= 1.0
-- parsec >= 3.0
-- directory >= 1.0
-- mtl >= 2.0
 
 library:
   source-dirs: src
 
 executables:
-  d24:
+  d25:
     main:                Main.hs
     source-dirs:         [app, src]
     ghc-options:
-    - -O3
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - d24
+    - d25
