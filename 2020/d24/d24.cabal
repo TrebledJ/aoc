@@ -6,13 +6,12 @@ cabal-version: 1.12
 
 name:           d24
 version:        0.1.0.0
-description:    No description.
+description:    Day 24 of AOC 2020.
 homepage:       https://github.com/TrebledJ/aoc#readme
 bug-reports:    https://github.com/TrebledJ/aoc/issues
 author:         TrebledJ
 copyright:      2021 TrebledJ
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 
 source-repository head

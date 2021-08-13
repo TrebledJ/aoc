@@ -50,14 +50,11 @@ getAdjacent (nw, e) dir = (nw + nw', e + e')
   offset SE = (-1, 0)
   offset SW = (-1, -1)
 
-(|>) = getAdjacent
-infix 5 |>
-
 parseD24 :: String -> Either ParseError [Tile]
 parseD24 = parse d24 ""
 
 d24 :: Parser [Tile]
-d24 = tile `sepBy1` spaces
+d24 = tile `sepBy1` newline
 
 tile :: Parser Tile
 tile = many1 $ choice
