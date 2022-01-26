@@ -1,0 +1,41 @@
+name:                haskell
+
+dependencies:
+- base >= 4.7 && < 5
+- split
+
+library:
+  source-dirs: src
+
+_exe-ghc-options: &exe-ghc-options
+ - -O2
+ - -threaded
+ - -Wall
+
+_exe_options:     &exe-options
+  source-dirs:    [app]
+  ghc-options:    *exe-ghc-options
+
+executables:
+  d01:
+    main:       D01.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+  d04:
+    main:       D04.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - split
+
+# tests:
+#   haskell-test:
+#     main:                Spec.hs
+    # source-dirs:         test
+#     ghc-options:
+#     - -threaded
+#     - -rtsopts
+#     - -with-rtsopts=-N
+#     dependencies:
+#     - haskell
