@@ -13,7 +13,7 @@ To run rust programs:
 
 ```sh
 cd rust
-cargo run --bin d01
+cargo run --release --bin d01
 ```
 
 With haskell programs you can specify options:
@@ -21,5 +21,7 @@ With haskell programs you can specify options:
 stack run d01 -- -f ~/input.txt # Run with other input files.
 stack run d01 -- p1 # Run only part 1.
 ```
+
+By default, both parts 1 and 2 are run.
 
 N.B. Haskell Stack will compile all executables in one go, so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml.
