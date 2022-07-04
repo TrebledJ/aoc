@@ -1,13 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
 module Utils where
 
 import           Control.Monad
 import           Data.Char                      ( digitToInt )
-import qualified Data.HashMap.Strict as M
-import           Data.Maybe
-import           Data.Void (Void)
-import           Debug.Trace as T
+import qualified Data.HashMap.Strict           as M
+import           Data.Hashable                  ( Hashable )
+import           Data.Void                      ( Void )
+import           Debug.Trace                   as T
 import           System.Environment
 import           Text.Megaparsec
 import           Text.Megaparsec.Char
@@ -40,13 +39,20 @@ instance Show a => Print (Answer a) where
   print' (Answer x) = print x
 
 
-defaultMain :: (Print b, Print c) => String -> (String -> a) -> (a -> b) -> (a -> c) -> IO ()
+defaultMain
+  :: (Print b, Print c)
+  => String
+  -> (String -> a)
+  -> (a -> b)
+  -> (a -> c)
+  -> IO ()
 defaultMain defaultFile parse p1 p2 = do
   opts  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   input <- parse <$> readFile (file opts)
   defaultRun opts input p1 p2
 
-defaultMainWithParser :: (Print b, Print c) => String -> Parser a -> (a -> b) -> (a -> c) -> IO ()
+defaultMainWithParser
+  :: (Print b, Print c) => String -> Parser a -> (a -> b) -> (a -> c) -> IO ()
 defaultMainWithParser defaultFile parser p1 p2 = do
   opts     <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   contents <- readFile (file opts)
@@ -54,7 +60,8 @@ defaultMainWithParser defaultFile parser p1 p2 = do
     Right input -> defaultRun opts input p1 p2
     Left  err   -> putStrLn $ errorBundlePretty err
 
-defaultRun :: (Print b, Print c) => Options -> a -> (a -> b) -> (a -> c) -> IO ()
+defaultRun
+  :: (Print b, Print c) => Options -> a -> (a -> b) -> (a -> c) -> IO ()
 defaultRun opts input part1 part2 = do
   when (runPart1 opts) $ do
     putStr "part1: "
