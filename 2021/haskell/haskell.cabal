@@ -37,6 +37,7 @@ executable d13
       D10
       D12
       D14
+      D16
       Paths_haskell
   hs-source-dirs:
       app
@@ -64,10 +65,39 @@ executable d14
       D10
       D12
       D13
+      D16
       Paths_haskell
   hs-source-dirs:
       app
   ghc-options: -O2 -threaded -Wall -Wno-type-defaults -main-is D14.main
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+  default-language: Haskell2010
+
+executable d16
+  main-is: D16.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -main-is D16.main
   build-depends:
       base >=4.7 && <5
     , containers
