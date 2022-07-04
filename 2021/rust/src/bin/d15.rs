@@ -73,7 +73,8 @@ fn djikstra(grid: &Grid) -> u32 {
                 // Not visited before.
                 nodes[nyi][nxi] = new_weight;
                 queue.push((nx as u32, ny as u32), prio(new_weight));
-            } else if new_weight < nodes[nyi][nxi] { // Skip visited neighbours or neighbours with an already lower dist.
+            } else if new_weight < nodes[nyi][nxi] {
+                // Found a shorter path. Update.
                 nodes[nyi][nxi] = new_weight;
                 queue.change_priority(&(nx as u32, ny as u32), prio(new_weight));
             }
@@ -91,6 +92,7 @@ fn part2(grid: &Grid) -> u32 {
     let h = grid.len();
     for y in 0..h {
         for i in 1..5 {
+            // 9 should wrap to 1. Since valid values are 1..9, apply mod 9 with some extra arithmetic.
             g[y].extend(grid[y].iter().map(|x| (x + i - 1) % 9 + 1));
         }
     }
@@ -101,6 +103,9 @@ fn part2(grid: &Grid) -> u32 {
     djikstra(&g)
 }
 
+/**
+ * Helper function for printing out a grid.
+ */
 #[allow(dead_code)]
 fn disp(grid: &Grid, spread: bool) {
     let h = grid.len();
