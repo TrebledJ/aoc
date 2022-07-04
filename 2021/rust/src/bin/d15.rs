@@ -1,6 +1,6 @@
+use priority_queue::PriorityQueue;
 use std::cmp;
 use std::fs;
-use priority_queue::PriorityQueue;
 
 type CellType = u32;
 type Grid = Vec<Vec<CellType>>;
@@ -36,11 +36,11 @@ fn dp(grid: &Grid) -> u32 {
             } else if j == 0 {
                 p[j][i] = p[j][i - 1] + grid[j][i];
             } else {
-                p[j][i] = cmp::min(p[j-1][i], p[j][i-1]) + grid[j][i];
+                p[j][i] = cmp::min(p[j - 1][i], p[j][i - 1]) + grid[j][i];
             }
         }
     }
-    p[h-1][w-1]
+    p[h - 1][w - 1]
 }
 
 fn djikstra(grid: &Grid) -> u32 {
@@ -60,12 +60,15 @@ fn djikstra(grid: &Grid) -> u32 {
         let (xi, yi) = (x as usize, y as usize);
 
         // Found target.
-        if xi == (w-1) && yi == (h-1) {
+        if xi == (w - 1) && yi == (h - 1) {
             return weight;
         }
-        
+
         // Update neighbours.
-        let ns = [(0,-1), (1,0), (0,1), (-1,0)].iter().map(|(i,j)| (x as i32 + i, y as i32 + j)).filter(|(x, y)| 0 <= *x && *x < w as i32 && 0 <= *y && *y < h as i32);
+        let ns = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+            .iter()
+            .map(|(i, j)| (x as i32 + i, y as i32 + j))
+            .filter(|(x, y)| 0 <= *x && *x < w as i32 && 0 <= *y && *y < h as i32);
         for (nx, ny) in ns {
             let (nxi, nyi) = (nx as usize, ny as usize);
             let new_weight = nodes[yi][xi] + grid[nyi][nxi];
@@ -98,7 +101,11 @@ fn part2(grid: &Grid) -> u32 {
     }
     let fat_grid = g.clone();
     for i in 1..5 {
-        g.extend(fat_grid.iter().map(|r| r.iter().map(|c| (c + i - 1) % 9 + 1).collect::<Vec<u32>>()));
+        g.extend(
+            fat_grid
+                .iter()
+                .map(|r| r.iter().map(|c| (c + i - 1) % 9 + 1).collect::<Vec<u32>>()),
+        );
     }
     djikstra(&g)
 }
@@ -126,7 +133,11 @@ fn disp(grid: &Grid, spread: bool) {
 fn parse(contents: String) -> Grid {
     contents
         .lines()
-        .map(|s| s.chars().map(|c| c.to_digit(10).unwrap() as CellType).collect())
+        .map(|s| {
+            s.chars()
+                .map(|c| c.to_digit(10).unwrap() as CellType)
+                .collect()
+        })
         .collect()
 }
 
