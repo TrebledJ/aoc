@@ -1,5 +1,4 @@
 -- CAFJHZCK
-
 module D13 where
 
 import qualified Data.HashSet                  as S
@@ -32,8 +31,8 @@ part1 :: ([Coor], [Fold]) -> Int
 part1 (cs, f : _) = length $ foldPaper (S.fromList cs) f
 part1 (_ , _    ) = undefined
 
-part2 :: ([Coor], [Fold]) -> Int
-part2 (cs, fs) = trace grid 0
+part2 :: ([Coor], [Fold]) -> String
+part2 (cs, fs) = '\n' : grid
  where
   dots = foldl foldPaper (S.fromList cs) fs
   grid = unlines $ makeGrid dots

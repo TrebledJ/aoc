@@ -1,10 +1,12 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Utils where
 
 import           Control.Monad
 import           Data.Hashable (Hashable)
 import qualified Data.HashMap.Strict as M
 import           Data.Maybe
-import           Data.Void
+import           Data.Void (Void)
 import           Debug.Trace as T
 import           System.Environment
 import           Text.Megaparsec
@@ -20,13 +22,31 @@ data Options = Options
   }
 
 
-defaultMain :: String -> (String -> a) -> (a -> Int) -> (a -> Int) -> IO ()
+class Show a => Print a where
+  print' :: a -> IO ()
+  print' = print
+
+-- Implement for common types, especially String.
+instance Print Int where
+instance Print Integer where
+instance Print Float where
+instance Print Double where
+instance Print String where
+  print' = putStrLn
+
+-- Wrapper because of the silly undecidable instances.
+newtype Answer a = Answer a deriving Show
+instance Show a => Print (Answer a) where
+  print' (Answer x) = print x
+
+
+defaultMain :: (Print b, Print c) => String -> (String -> a) -> (a -> b) -> (a -> c) -> IO ()
 defaultMain defaultFile parse p1 p2 = do
   opts  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   input <- parse <$> readFile (file opts)
   defaultRun opts input p1 p2
 
-defaultMainWithParser :: (Show c) => String -> Parser a -> (a -> Int) -> (a -> c) -> IO ()
+defaultMainWithParser :: (Print b, Print c) => String -> Parser a -> (a -> b) -> (a -> c) -> IO ()
 defaultMainWithParser defaultFile parser p1 p2 = do
   opts     <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   contents <- readFile (file opts)
@@ -34,14 +54,14 @@ defaultMainWithParser defaultFile parser p1 p2 = do
     Right input -> defaultRun opts input p1 p2
     Left  err   -> putStrLn $ errorBundlePretty err
 
-defaultRun :: (Show c) => Options -> a -> (a -> Int) -> (a -> c) -> IO ()
+defaultRun :: (Print b, Print c) => Options -> a -> (a -> b) -> (a -> c) -> IO ()
 defaultRun opts input part1 part2 = do
   when (runPart1 opts) $ do
     putStr "part1: "
-    print $ part1 input
+    print' $ part1 input
   when (runPart2 opts) $ do
     putStr "part2: "
-    print $ part2 input
+    print' $ part2 input
 
 nullOpts :: Options
 nullOpts = Options { file = "", runPart1 = False, runPart2 = False }

@@ -73,13 +73,13 @@ executables:
   #   - split
   #   - unordered-containers
   #   - hashable
-  # d13:
-  #   main:       D13.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - megaparsec
-  #   - unordered-containers
+  d13:
+    main:       D13.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+    - unordered-containers
   d14:
     main:       D14.main
     <<:         *exe-options

@@ -25,6 +25,33 @@ library
     , unordered-containers
   default-language: Haskell2010
 
+executable d13
+  main-is: D13.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D14
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -main-is D13.main
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+  default-language: Haskell2010
+
 executable d14
   main-is: D14.hs
   other-modules:
