@@ -87,6 +87,13 @@ executables:
     - haskell
     - megaparsec
     - unordered-containers
+  d16:
+    main:       D16.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+    - unordered-containers
 
 # tests:
 #   haskell-test:

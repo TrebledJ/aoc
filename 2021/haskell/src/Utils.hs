@@ -3,7 +3,7 @@
 module Utils where
 
 import           Control.Monad
-import           Data.Hashable (Hashable)
+import           Data.Char                      ( digitToInt )
 import qualified Data.HashMap.Strict as M
 import           Data.Maybe
 import           Data.Void (Void)
@@ -98,3 +98,6 @@ trace' x = T.traceShow x x
 
 counter :: (Hashable a, Eq a) => [a] -> M.HashMap a Int
 counter = foldr (\x -> M.insertWith (+) x 1) M.empty
+
+fromBinary :: String -> Int
+fromBinary = foldl (\acc d -> 2 * acc + digitToInt d) 0
