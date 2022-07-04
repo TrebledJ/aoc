@@ -3,6 +3,11 @@ name:                haskell
 dependencies:
 - base >= 4.7 && < 5
 - split
+- megaparsec
+- hashable
+- matrix
+- containers
+- unordered-containers
 
 library:
   source-dirs: src
@@ -11,23 +16,77 @@ _exe-ghc-options: &exe-ghc-options
  - -O2
  - -threaded
  - -Wall
+ - -Wno-type-defaults
 
 _exe_options:     &exe-options
   source-dirs:    [app]
   ghc-options:    *exe-ghc-options
 
 executables:
-  d01:
-    main:       D01.main
+  # d01:
+  #   main:       D01.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  # d04:
+  #   main:       D04.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - split
+  # d06:
+  #   main:       D06.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - matrix
+  #   - split
+  # d07:
+  #   main:       D07.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - split
+  # d08:
+  #   main:       D08.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - split
+  #   - containers
+  # d09:
+  #   main:       D09.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - unordered-containers
+  # d10:
+  #   main:       D10.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  # d12:
+  #   main:       D12.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - split
+  #   - unordered-containers
+  #   - hashable
+  # d13:
+  #   main:       D13.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - megaparsec
+  #   - unordered-containers
+  d14:
+    main:       D14.main
     <<:         *exe-options
     dependencies:
     - haskell
-  d04:
-    main:       D04.main
-    <<:         *exe-options
-    dependencies:
-    - haskell
-    - split
+    - megaparsec
+    - unordered-containers
 
 # tests:
 #   haskell-test:

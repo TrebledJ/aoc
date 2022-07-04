@@ -20,12 +20,10 @@ at g x y = g !! (y * 5 + x)
 wins :: [Int] -> Grid -> Bool
 wins hist g = or [ hit [ at g i j | j <- [0 .. 4] ] | i <- [0 .. 4] ]
     || or [ hit [ at g i j | i <- [0 .. 4] ] | j <- [0 .. 4] ]
-    -- || hit [at g i i | i <- [0..4]] -- Diagonals don't count?
-    -- || hit [at g i (4-i) | i <- [0..4]]
     where hit = all (`elem` hist)
 
-score :: [Int] -> Grid -> Int
-score hist g = sum [ x | x <- g, x `notElem` hist ] * last hist
+gridScore :: [Int] -> Grid -> Int
+gridScore hist g = sum [ x | x <- g, x `notElem` hist ] * last hist
 
 parse :: String -> ([Int], [Grid])
 parse s =
@@ -42,9 +40,9 @@ iter ns gs = iter' ns gs 1
         where (won, ongoing) = partition (wins (take i ns')) gs'
 
 part1 :: ([Int], [Grid]) -> Int
-part1 (ns, gs) = score (take i ns) (head firstWinGroup)
+part1 (ns, gs) = gridScore (take i ns) (head firstWinGroup)
     where (i, firstWinGroup) = firstBy (not . null . snd) $ iter ns gs
 
 part2 :: ([Int], [Grid]) -> Int
-part2 (ns, gs) = score (take i ns) (head firstWinGroup)
+part2 (ns, gs) = gridScore (take i ns) (head firstWinGroup)
     where (i, firstWinGroup) = lastBy (not . null . snd) $ iter ns gs

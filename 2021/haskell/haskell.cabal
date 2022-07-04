@@ -17,33 +17,37 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers
+    , hashable
+    , matrix
+    , megaparsec
     , split
+    , unordered-containers
   default-language: Haskell2010
 
-executable d01
-  main-is: D01.hs
-  other-modules:
-      D04
-      Paths_haskell
-  hs-source-dirs:
-      app
-  ghc-options: -O2 -threaded -Wall -main-is D01.main
-  build-depends:
-      base >=4.7 && <5
-    , haskell
-    , split
-  default-language: Haskell2010
-
-executable d04
-  main-is: D04.hs
+executable d14
+  main-is: D14.hs
   other-modules:
       D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
       Paths_haskell
   hs-source-dirs:
       app
-  ghc-options: -O2 -threaded -Wall -main-is D04.main
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -main-is D14.main
   build-depends:
       base >=4.7 && <5
+    , containers
+    , hashable
     , haskell
+    , matrix
+    , megaparsec
     , split
+    , unordered-containers
   default-language: Haskell2010
