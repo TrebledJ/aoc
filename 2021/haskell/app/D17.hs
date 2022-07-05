@@ -61,7 +61,7 @@ part2 (xmin, xmax, ymin, ymax) = sum
  where
   initialU0 v0 = nub
     [ u0
-    | i  <- [ceiling (y_i_enter v0 ymax) .. floor (y_i_exit v0 ymin)]
+    | i  <- [ceiling (inverseStep v0 ymax) .. floor (inverseStep v0 ymin)]
     , u0 <- [xmax, xmax - 1 .. min_u0 - 1]
     , let x = floor $ x_i (fromIntegral u0) (fromIntegral i)
     , xmin <= x && x <= xmax
