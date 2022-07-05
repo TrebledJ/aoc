@@ -85,6 +85,9 @@ parseArgs o (_        : rest) = o
 number :: (Num i, Read i) => Parser i
 number = read <$> some digitChar
 
+integer :: (Num i, Read i, Show i) => Parser i
+integer = ((0-) <$> try (char '-' *> number)) <|> number
+
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p
 

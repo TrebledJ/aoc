@@ -73,27 +73,33 @@ executables:
   #   - split
   #   - unordered-containers
   #   - hashable
-  d13:
-    main:       D13.main
+  # d13:
+  #   main:       D13.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - megaparsec
+  #   - unordered-containers
+  # d14:
+  #   main:       D14.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - megaparsec
+  #   - unordered-containers
+  # d16:
+  #   main:       D16.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - megaparsec
+  #   - unordered-containers
+  d17:
+    main:       D17.main
     <<:         *exe-options
     dependencies:
     - haskell
     - megaparsec
-    - unordered-containers
-  d14:
-    main:       D14.main
-    <<:         *exe-options
-    dependencies:
-    - haskell
-    - megaparsec
-    - unordered-containers
-  d16:
-    main:       D16.main
-    <<:         *exe-options
-    dependencies:
-    - haskell
-    - megaparsec
-    - unordered-containers
 
 # tests:
 #   haskell-test:
