@@ -11,7 +11,7 @@ import           Utils
 
 
 main :: IO ()
-main = defaultMainWithParser defaultFile parser part1 part2
+main = defaultMain defaultFile parser part1 part2
 
 defaultFile :: String
 defaultFile = "../input/d14.txt"

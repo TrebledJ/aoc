@@ -38,31 +38,29 @@ newtype Answer a = Answer a deriving Show
 instance Show a => Print (Answer a) where
   print' (Answer x) = print x
 
+class ParseLike p where
+  -- Parser object, filename, contents -> result.
+  doParse :: p a -> String -> String -> a
+
+instance ParseLike ((->) String) where
+  doParse f _ = f
+
+instance ParseLike Parser where
+  doParse p file txt = case runParser p file txt of
+    Right res -> res
+    Left  err -> T.trace (errorBundlePretty err) undefined
+
 
 defaultMain
-  :: (Print b, Print c)
-  => String
-  -> (String -> a)
-  -> (a -> b)
-  -> (a -> c)
+  :: (ParseLike p, Print b, Print c)
+  => String   -- Default input file, if no -f option was provided from args.
+  -> p a      -- Any instance of ParseLike, e.g. a function (String -> a) or a parser combinator (Parser a).
+  -> (a -> b) -- Function to solve part 1. Takes in input and returns something printable.
+  -> (a -> c) -- Function to solve part 2.
   -> IO ()
-defaultMain defaultFile parse p1 p2 = do
+defaultMain defaultFile parse part1 part2 = do
   opts  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
-  input <- parse <$> readFile (file opts)
-  defaultRun opts input p1 p2
-
-defaultMainWithParser
-  :: (Print b, Print c) => String -> Parser a -> (a -> b) -> (a -> c) -> IO ()
-defaultMainWithParser defaultFile parser p1 p2 = do
-  opts     <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
-  contents <- readFile (file opts)
-  case runParser parser (file opts) contents of
-    Right input -> defaultRun opts input p1 p2
-    Left  err   -> putStrLn $ errorBundlePretty err
-
-defaultRun
-  :: (Print b, Print c) => Options -> a -> (a -> b) -> (a -> c) -> IO ()
-defaultRun opts input part1 part2 = do
+  input <- doParse parse (file opts) <$> readFile (file opts)
   when (runPart1 opts) $ do
     putStr "part1: "
     print' $ part1 input
@@ -86,7 +84,7 @@ number :: (Num i, Read i) => Parser i
 number = read <$> some digitChar
 
 integer :: (Num i, Read i, Show i) => Parser i
-integer = ((0-) <$> try (char '-' *> number)) <|> number
+integer = ((0 -) <$> try (char '-' *> number)) <|> number
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p
