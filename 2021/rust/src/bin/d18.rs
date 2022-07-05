@@ -1,4 +1,5 @@
 use std::fs;
+use itertools::iproduct;
 
 #[derive(Debug, Clone)]
 struct Cell {
@@ -43,21 +44,11 @@ fn part1(input: &Vec<Vec<Cell>>) -> u32 {
         .cloned()
         .reduce(|acc, x| add(&acc, &x))
         .unwrap();
-    magnitude(&sum)
+    magnitude(sum)
 }
 
 fn part2(input: &Vec<Vec<Cell>>) -> u32 {
-    let mut magmax = 0;
-    for i in 0..input.len() {
-        for j in i + 1..input.len() {
-            let res = add(&input[i], &input[j]);
-            let mag = magnitude(&res);
-            if mag > magmax {
-                magmax = mag;
-            }
-        }
-    }
-    magmax
+    iproduct!(input, input.clone().iter().skip(1)).map(|(a,b)| magnitude(add(a, b))).max().unwrap()
 }
 
 // Maybe using a linked list is better?
@@ -112,7 +103,7 @@ fn add(a: &Vec<Cell>, b: &Vec<Cell>) -> Vec<Cell> {
     v
 }
 
-fn magnitude(v: &Vec<Cell>) -> u32 {
+fn magnitude(v: Vec<Cell>) -> u32 {
     let mut vstack: Vec<u32> = Vec::new();
     let mut dstack: Vec<u32> = Vec::new();
     for &Cell { value, depth } in v.iter() {
