@@ -7,6 +7,55 @@ type VType = u8;
 type Map = HashMap<(KType, KType), VType>;
 type Set = HashSet<(KType, KType)>;
 
+fn main() {
+    let filename = "../input/d11.txt";
+
+    let contents = fs::read_to_string(filename).unwrap();
+    let grid = parse(contents);
+
+    println!("part1: {}", part1(&grid));
+    println!("part2: {}", part2(&grid));
+}
+
+fn parse(contents: String) -> Map {
+    contents
+        .lines()
+        .enumerate()
+        .map(|(j, s)| {
+            s.chars()
+                .enumerate()
+                .map(move |(i, c)| ((i, j), c.to_digit(10).unwrap() as VType))
+        })
+        .flatten()
+        .into_iter()
+        .collect()
+}
+
+fn part1(grid: &Map) -> u32 {
+    let mut mgrid = grid.clone();
+    let keys = grid.keys().copied().collect::<Vec<_>>();
+    let steps = 100;
+    let mut total_flashes = 0;
+    for _ in 0..steps {
+        total_flashes += step(&keys, &mut mgrid);
+    }
+    disp(&mgrid, false);
+    total_flashes
+}
+
+fn part2(grid: &Map) -> u32 {
+    let mut mgrid = grid.clone();
+    let keys = grid.keys().copied().collect::<Vec<_>>();
+    let grid_size = 100;
+    let mut i = 0;
+    loop {
+        i += 1;
+        if step(&keys, &mut mgrid) == grid_size {
+            return i;
+        }
+    }
+}
+
 fn flash(mgrid: &mut Map, (x, y): (KType, KType), flashed: &mut Set) {
     if flashed.contains(&(x, y)) {
         return;
@@ -54,18 +103,6 @@ fn step(keys: &Vec<(KType, KType)>, mgrid: &mut Map) -> u32 {
     flashed.len() as u32
 }
 
-fn part1(grid: &Map) -> u32 {
-    let mut mgrid = grid.clone();
-    let keys = grid.keys().copied().collect::<Vec<_>>();
-    let steps = 100;
-    let mut total_flashes = 0;
-    for _ in 0..steps {
-        total_flashes += step(&keys, &mut mgrid);
-    }
-    disp(&mgrid, false);
-    total_flashes
-}
-
 fn disp(grid: &Map, spread: bool) {
     for j in 0..10 {
         for i in 0..10 {
@@ -78,41 +115,4 @@ fn disp(grid: &Map, spread: bool) {
         println!("");
     }
     println!("");
-}
-
-fn part2(grid: &Map) -> u32 {
-    let mut mgrid = grid.clone();
-    let keys = grid.keys().copied().collect::<Vec<_>>();
-    let grid_size = 100;
-    let mut i = 0;
-    loop {
-        i += 1;
-        if step(&keys, &mut mgrid) == grid_size {
-            return i;
-        }
-    }
-}
-
-fn parse(contents: String) -> Map {
-    contents
-        .lines()
-        .enumerate()
-        .map(|(j, s)| {
-            s.chars()
-                .enumerate()
-                .map(move |(i, c)| ((i, j), c.to_digit(10).unwrap() as VType))
-        })
-        .flatten()
-        .into_iter()
-        .collect()
-}
-
-fn main() {
-    let filename = "../input/d11.txt";
-
-    let contents = fs::read_to_string(filename).unwrap();
-    let grid = parse(contents);
-
-    println!("part1: {}", part1(&grid));
-    println!("part2: {}", part2(&grid));
 }

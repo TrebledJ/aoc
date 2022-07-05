@@ -1,13 +1,18 @@
 use std::fs;
 
-fn count_one<'a>(xs: impl IntoIterator<Item = &'a u16>, col: u16) -> u16 {
-    xs.into_iter()
-        .map(|i| (i & (1 << col) != 0) as u16)
-        .sum::<u16>()
-}
+fn main() {
+    let filename = "../input/d03.txt";
 
-fn bin2int(acc: i32, x: i32) -> i32 {
-    2 * acc + x
+    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
+    let text = contents.lines().collect::<Vec<_>>();
+    let blen = text[0].len() as u16;
+    let xs = text
+        .iter()
+        .map(|s| u16::from_str_radix(s, 2).unwrap())
+        .collect::<Vec<_>>();
+
+    println!("part1: {}", part1(&xs, blen));
+    println!("part2: {}", part2(&xs, blen));
 }
 
 fn part1(xs: &Vec<u16>, blen: u16) -> i32 {
@@ -48,17 +53,12 @@ fn part2(xs: &Vec<u16>, blen: u16) -> i32 {
     (oxygen[0] as i32) * (co2[0] as i32)
 }
 
-fn main() {
-    let filename = "../input/d03.txt";
+fn count_one<'a>(xs: impl IntoIterator<Item = &'a u16>, col: u16) -> u16 {
+    xs.into_iter()
+        .map(|i| (i & (1 << col) != 0) as u16)
+        .sum::<u16>()
+}
 
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-    let text = contents.lines().collect::<Vec<_>>();
-    let blen = text[0].len() as u16;
-    let xs = text
-        .iter()
-        .map(|s| u16::from_str_radix(s, 2).unwrap())
-        .collect::<Vec<_>>();
-
-    println!("part1: {}", part1(&xs, blen));
-    println!("part2: {}", part2(&xs, blen));
+fn bin2int(acc: i32, x: i32) -> i32 {
+    2 * acc + x
 }

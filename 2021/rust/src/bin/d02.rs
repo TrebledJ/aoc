@@ -30,6 +30,17 @@ impl FromStr for Inst {
     }
 }
 
+fn main() {
+    let filename = "../input/d02.txt";
+
+    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
+    let text = contents.lines();
+    let insts = text.map(|s| Inst::from_str(s).unwrap()).collect::<Vec<_>>();
+
+    println!("part1: {}", part1(&insts));
+    println!("part2: {}", part2(&insts));
+}
+
 fn part1(insts: &Vec<Inst>) -> i32 {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
@@ -58,15 +69,4 @@ fn part2(insts: &Vec<Inst>) -> i32 {
         }
     }
     x * y
-}
-
-fn main() {
-    let filename = "../input/d02.txt";
-
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-    let text = contents.lines();
-    let insts = text.map(|s| Inst::from_str(s).unwrap()).collect::<Vec<_>>();
-
-    println!("part1: {}", part1(&insts));
-    println!("part2: {}", part2(&insts));
 }

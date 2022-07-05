@@ -5,6 +5,51 @@ use std::fs;
 type CellType = u32;
 type Grid = Vec<Vec<CellType>>;
 
+fn main() {
+    let filename = "../input/d15.txt";
+
+    let contents = fs::read_to_string(filename).unwrap();
+    let grid = parse(contents);
+
+    println!("part1: {}", part1(&grid));
+    println!("part2: {}", part2(&grid));
+}
+
+fn parse(contents: String) -> Grid {
+    contents
+        .lines()
+        .map(|s| {
+            s.chars()
+                .map(|c| c.to_digit(10).unwrap() as CellType)
+                .collect()
+        })
+        .collect()
+}
+
+fn part1(grid: &Grid) -> u32 {
+    djikstra(grid)
+}
+
+fn part2(grid: &Grid) -> u32 {
+    let mut g = grid.clone();
+    let h = grid.len();
+    for y in 0..h {
+        for i in 1..5 {
+            // 9 should wrap to 1. Since valid values are 1..9, apply mod 9 with some extra arithmetic.
+            g[y].extend(grid[y].iter().map(|x| (x + i - 1) % 9 + 1));
+        }
+    }
+    let fat_grid = g.clone();
+    for i in 1..5 {
+        g.extend(
+            fat_grid
+                .iter()
+                .map(|r| r.iter().map(|c| (c + i - 1) % 9 + 1).collect::<Vec<u32>>()),
+        );
+    }
+    djikstra(&g)
+}
+
 /**
  * DP Recursion.
  *
@@ -86,30 +131,6 @@ fn djikstra(grid: &Grid) -> u32 {
     0
 }
 
-fn part1(grid: &Grid) -> u32 {
-    djikstra(grid)
-}
-
-fn part2(grid: &Grid) -> u32 {
-    let mut g = grid.clone();
-    let h = grid.len();
-    for y in 0..h {
-        for i in 1..5 {
-            // 9 should wrap to 1. Since valid values are 1..9, apply mod 9 with some extra arithmetic.
-            g[y].extend(grid[y].iter().map(|x| (x + i - 1) % 9 + 1));
-        }
-    }
-    let fat_grid = g.clone();
-    for i in 1..5 {
-        g.extend(
-            fat_grid
-                .iter()
-                .map(|r| r.iter().map(|c| (c + i - 1) % 9 + 1).collect::<Vec<u32>>()),
-        );
-    }
-    djikstra(&g)
-}
-
 /**
  * Helper function for printing out a grid.
  */
@@ -128,25 +149,4 @@ fn disp(grid: &Grid, spread: bool) {
         println!("");
     }
     println!("");
-}
-
-fn parse(contents: String) -> Grid {
-    contents
-        .lines()
-        .map(|s| {
-            s.chars()
-                .map(|c| c.to_digit(10).unwrap() as CellType)
-                .collect()
-        })
-        .collect()
-}
-
-fn main() {
-    let filename = "../input/d15.txt";
-
-    let contents = fs::read_to_string(filename).unwrap();
-    let grid = parse(contents);
-
-    println!("part1: {}", part1(&grid));
-    println!("part2: {}", part2(&grid));
 }
