@@ -111,7 +111,7 @@ fn parse(contents: String) -> Vec<Vec<Pos>> {
  * Returns (part1 answer, scanner offsets in order).
  */
 fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
-    fn try_intersect(sc: &Vec<Pos>, ebs: &HashMap<Pos, HashSet<Pos>>, rots: &Vec<Rot>) -> Option<(HashSet<Pos>, Pos)> {
+    fn try_intersect(sc: &Vec<Pos>, ebs: &HashMap<Pos, HashSet<Pos>>, rots: &Vec<Rot>) -> Option<(HashSet<Pos>, Pos, Pos)> {
         for b in sc {
             let boff = offsets(sc, *b);
             for (eb, ebset) in ebs.clone() {
@@ -120,7 +120,7 @@ fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
                     let inter = rboff.intersection(&ebset).collect::<HashSet<_>>();
                     if inter.len() >= 12 {
                         let scoff = eb - b.rotate(r);
-                        return Some((offsets(&Vec::from_iter(rboff.iter().cloned()), -eb), scoff));
+                        return Some((offsets(rboff.iter(), -eb), scoff, eb));
                     }
                 }
             }
@@ -139,14 +139,14 @@ fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
                 continue;
             }
 
-            println!("checking scanner {i}");
             match try_intersect(sc, &ebs, &rots) {
-                Some((newbs, scoff)) => {
-                    println!("found match with scanner offset {:?}", scoff);
+                Some((newbs, scoff, eb)) => {
                     scoffs[i] = scoff;
+                    ebs.remove(&eb); // Remove edge bacon since, it likely won't be used again.
                     bacon.extend(newbs.clone());
-                    ebs.extend(edge_beacons(&Vec::from_iter(newbs.iter().cloned()))); // Add new edge beacons from current scanner.
+                    ebs.extend(edge_beacons(newbs.iter())); // Add new edge beacons from current scanner.
                     merged.insert(i);
+                    println!("({}/{}) merged scanner {i} at offset {:?}", merged.len(), scs.len(), scoff);
                 },
                 None => ()
             }
@@ -156,19 +156,6 @@ fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
     (bacon.len() as u32, scoffs)
 }
 
-fn test() {
-    let p1 = Pos(-618, -824, -621);
-    let p2 = Pos(-537, -823, -458);
-    let p12 = Pos(686, 422, 578);
-    let p22 = Pos(605, 423, 415);
-    let p3 = p2 - p1;
-    let p32 = p22 - p12;
-    println!("{:?}\t{:?}", p3, p32);
-    for r in rotations() {
-        println!("{:?}", p32.rotate(&r));
-    }
-}
-
 fn part2(scoffs: &Vec<Pos>) -> u32 {
     iproduct!(scoffs, scoffs.clone().iter().skip(1)).map(|(&a, &b)| a.manhattan(b)).max().unwrap()
 }
@@ -176,20 +163,23 @@ fn part2(scoffs: &Vec<Pos>) -> u32 {
 /**
  * Returns a map of (edge beacon -> offset set).
  */
-fn edge_beacons(v: &Vec<Pos>) -> HashMap<Pos, HashSet<Pos>> {
+fn edge_beacons<'a, I>(v: I) -> HashMap<Pos, HashSet<Pos>> 
+    where I: IntoIterator<Item=&'a Pos>, I: Clone
+{
     let edges = vec![
-        *v.iter().min_by(|u, v| u.0.cmp(&v.0)).unwrap(),
-        *v.iter().max_by(|u, v| u.0.cmp(&v.0)).unwrap(),
-        *v.iter().min_by(|u, v| u.1.cmp(&v.1)).unwrap(),
-        *v.iter().max_by(|u, v| u.1.cmp(&v.1)).unwrap(),
-        *v.iter().min_by(|u, v| u.2.cmp(&v.2)).unwrap(),
-        *v.iter().max_by(|u, v| u.2.cmp(&v.2)).unwrap(),
+        *v.clone().into_iter().min_by(|u, v| u.0.cmp(&v.0)).unwrap(),
+        *v.clone().into_iter().max_by(|u, v| u.0.cmp(&v.0)).unwrap(),
+        *v.clone().into_iter().min_by(|u, v| u.1.cmp(&v.1)).unwrap(),
+        *v.clone().into_iter().max_by(|u, v| u.1.cmp(&v.1)).unwrap(),
+        *v.clone().into_iter().min_by(|u, v| u.2.cmp(&v.2)).unwrap(),
+        *v.clone().into_iter().max_by(|u, v| u.2.cmp(&v.2)).unwrap(),
     ];
-    edges.iter().map(|eb| (*eb, offsets(v, *eb))).collect()
+    edges.iter().map(|eb| (*eb, offsets(v.clone(), *eb)))
+        .collect()
 }
 
-fn offsets(v: &Vec<Pos>, p: Pos) -> HashSet<Pos> {
-    v.iter().map(|q| *q - p).collect()
+fn offsets<'a>(v: impl IntoIterator<Item=&'a Pos>, p: Pos) -> HashSet<Pos> {
+    v.into_iter().map(|q| *q - p).collect()
 }
 
 fn rotations() -> Vec<Rot> {
