@@ -1,6 +1,7 @@
+use itertools::iproduct;
 /**
  * Terminology.
- * 
+ *
  * scs: scanners
  * scoff: scanner offset
  * bacon: beacon
@@ -11,8 +12,6 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs;
 use std::ops;
-use itertools::iproduct;
-
 
 #[derive(Debug, Clone)]
 struct Rot(i32, i32, i32);
@@ -107,11 +106,15 @@ fn parse(contents: String) -> Vec<Vec<Pos>> {
  *                  - Apply the translation `eb` - `b` to scanner-N beacons.
  *                  - Add those beacons to scanner-0's set.
  *                  - Compute the edge beacons and associated offsets of scanner-N (just like we did for scanner 0) and add them to the total set of edge beacons and offsets.
- * 
+ *
  * Returns (part1 answer, scanner offsets in order).
  */
 fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
-    fn try_intersect(sc: &Vec<Pos>, ebs: &HashMap<Pos, HashSet<Pos>>, rots: &Vec<Rot>) -> Option<(HashSet<Pos>, Pos, Pos)> {
+    fn try_intersect(
+        sc: &Vec<Pos>,
+        ebs: &HashMap<Pos, HashSet<Pos>>,
+        rots: &Vec<Rot>,
+    ) -> Option<(HashSet<Pos>, Pos, Pos)> {
         for b in sc {
             let boff = offsets(sc, *b);
             for (eb, ebset) in ebs.clone() {
@@ -146,9 +149,14 @@ fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
                     bacon.extend(newbs.clone());
                     ebs.extend(edge_beacons(newbs.iter())); // Add new edge beacons from current scanner.
                     merged.insert(i);
-                    println!("({}/{}) merged scanner {i} at offset {:?}", merged.len(), scs.len(), scoff);
-                },
-                None => ()
+                    println!(
+                        "({}/{}) merged scanner {i} at offset {:?}",
+                        merged.len(),
+                        scs.len(),
+                        scoff
+                    );
+                }
+                None => (),
             }
         }
     }
@@ -157,14 +165,19 @@ fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
 }
 
 fn part2(scoffs: &Vec<Pos>) -> u32 {
-    iproduct!(scoffs, scoffs.clone().iter().skip(1)).map(|(&a, &b)| a.manhattan(b)).max().unwrap()
+    iproduct!(scoffs, scoffs.clone().iter().skip(1))
+        .map(|(&a, &b)| a.manhattan(b))
+        .max()
+        .unwrap()
 }
 
 /**
  * Returns a map of (edge beacon -> offset set).
  */
-fn edge_beacons<'a, I>(v: I) -> HashMap<Pos, HashSet<Pos>> 
-    where I: IntoIterator<Item=&'a Pos>, I: Clone
+fn edge_beacons<'a, I>(v: I) -> HashMap<Pos, HashSet<Pos>>
+where
+    I: IntoIterator<Item = &'a Pos>,
+    I: Clone,
 {
     let edges = vec![
         *v.clone().into_iter().min_by(|u, v| u.0.cmp(&v.0)).unwrap(),
@@ -174,11 +187,13 @@ fn edge_beacons<'a, I>(v: I) -> HashMap<Pos, HashSet<Pos>>
         *v.clone().into_iter().min_by(|u, v| u.2.cmp(&v.2)).unwrap(),
         *v.clone().into_iter().max_by(|u, v| u.2.cmp(&v.2)).unwrap(),
     ];
-    edges.iter().map(|eb| (*eb, offsets(v.clone(), *eb)))
+    edges
+        .iter()
+        .map(|eb| (*eb, offsets(v.clone(), *eb)))
         .collect()
 }
 
-fn offsets<'a>(v: impl IntoIterator<Item=&'a Pos>, p: Pos) -> HashSet<Pos> {
+fn offsets<'a>(v: impl IntoIterator<Item = &'a Pos>, p: Pos) -> HashSet<Pos> {
     v.into_iter().map(|q| *q - p).collect()
 }
 
