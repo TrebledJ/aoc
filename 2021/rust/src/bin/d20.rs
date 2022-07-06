@@ -6,7 +6,7 @@
 use std::collections::HashMap;
 use std::fs;
 
-type Map = HashMap<(i32, i32), char>;
+type Map = HashMap<(i32, i32), bool>;
 
 fn main() {
     let filename = "../input/d20.txt";
@@ -18,20 +18,20 @@ fn main() {
     println!("part2: {}", part2(&lookup, &grid, w, h));
 }
 
-fn parse(contents: String) -> (Vec<char>, Map, usize, usize) {
+fn parse(contents: String) -> (Vec<bool>, Map, usize, usize) {
     let (s, input) = contents.split_once("\n\n").unwrap();
     let ls = input.lines();
     (
         s.chars()
             .filter(|&c| c == '#' || c == '.')
-            .map(|c| if c == '#' { '1' } else { '0' })
+            .map(|c| c == '#')
             .collect(),
         ls.clone()
             .enumerate()
             .map(|(j, row)| {
                 row.chars()
                     .enumerate()
-                    .map(move |(i, c)| ((i as i32, j as i32), if c == '#' { '1' } else { '0' }))
+                    .map(move |(i, c)| ((i as i32, j as i32), c == '#'))
             })
             .flatten()
             .into_iter()
@@ -41,22 +41,28 @@ fn parse(contents: String) -> (Vec<char>, Map, usize, usize) {
     )
 }
 
-fn part1(lookup: &Vec<char>, grid: &Map, w: usize, h: usize) -> u32 {
+fn part1(lookup: &Vec<bool>, grid: &Map, w: usize, h: usize) -> u32 {
     enhance(2, lookup, grid, w, h)
 }
 
-fn part2(lookup: &Vec<char>, grid: &Map, w: usize, h: usize) -> u32 {
+fn part2(lookup: &Vec<bool>, grid: &Map, w: usize, h: usize) -> u32 {
     enhance(50, lookup, grid, w, h)
 }
 
-fn enhance(n: u32, lookup: &Vec<char>, grid: &Map, w: usize, h: usize) -> u32 {
+fn enhance(n: u32, lookup: &Vec<bool>, grid: &Map, w: usize, h: usize) -> u32 {
     let mut oldg = grid.clone();
     let mut newg: Map = HashMap::new();
 
     // Helper to get a cell.
-    let get = |i, j, k, oldg: &Map| match oldg.get(&(i, j)) {
-        Some(&v) => v,
-        None => ((1 - k % 2) as u8 + b'0') as char, // Default to '1' on odd flashes and '0' on even flashes.
+    let get = |i, j, k, oldg: &Map| {
+        if match oldg.get(&(i, j)) {
+            Some(&v) => v,
+            None => k % 2 == 0, // Default to `true` on odd flashes and `false` on even flashes. f -> t -> f -> t -> ...
+        } {
+            '1'
+        } else {
+            '0'
+        }
     };
 
     // Enhances character at (i, j).
@@ -95,14 +101,14 @@ fn enhance(n: u32, lookup: &Vec<char>, grid: &Map, w: usize, h: usize) -> u32 {
         oldg = newg.clone();
         // disp(&newg, -k, h as i32 + k, -k, w as i32 + k);
     }
-    newg.iter().filter(|(_, c)| **c == '1').count() as u32
+    newg.iter().filter(|(_, c)| **c).count() as u32
 }
 
 #[allow(dead_code)]
 fn disp(g: &Map, minx: i32, maxx: i32, miny: i32, maxy: i32) {
     for j in minx..maxx {
         for i in miny..maxy {
-            print!("{}", if g[&(i, j)] == '1' { '#' } else { '.' })
+            print!("{}", if g[&(i, j)] { '#' } else { '.' })
         }
         print!("\n")
     }
