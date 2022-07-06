@@ -110,6 +110,7 @@ fn parse(contents: String) -> Vec<Vec<Pos>> {
  * Returns (part1 answer, scanner offsets in order).
  */
 fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
+    // TODO: try with matrices for rotation rboff?
     fn try_intersect(
         sc: &Vec<Pos>,
         ebs: &HashMap<Pos, HashSet<Pos>>,
