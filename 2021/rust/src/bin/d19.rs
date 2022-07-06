@@ -1,8 +1,18 @@
+/**
+ * Terminology.
+ * 
+ * scs: scanners
+ * scoff: scanner offset
+ * bacon: beacon
+ * ebs: edge beacon (beacons supposedly on the fringes of explored territory)
+ * newbs: this works on multiple levels. new bacons, new beacons, newbie beacons.
+ */
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs;
 use std::ops;
-use std::ops::Sub;
+use itertools::iproduct;
+
 
 #[derive(Debug, Clone)]
 struct Rot(i32, i32, i32);
@@ -20,6 +30,9 @@ impl Pos {
             }) * i.signum()
         };
         Pos(select(rx), select(ry), select(rz))
+    }
+    fn manhattan(self, rhs: Pos) -> u32 {
+        ((self.0 - rhs.0).abs() + (self.1 - rhs.1).abs() + (self.2 - rhs.2).abs()) as u32
     }
 }
 impl ops::Add<Pos> for Pos {
@@ -45,10 +58,11 @@ fn main() {
     let filename = "../input/d19.txt";
 
     let contents = fs::read_to_string(filename).unwrap();
-    let stuff = parse(contents);
+    let scs = parse(contents);
 
-    println!("part1: {}", part1(&stuff));
-    println!("part2: {}", part2(&stuff));
+    let (p1, scoffs) = part1(&scs);
+    println!("part1: {}", p1);
+    println!("part2: {}", part2(&scoffs));
 }
 
 fn parse(contents: String) -> Vec<Vec<Pos>> {
@@ -93,9 +107,11 @@ fn parse(contents: String) -> Vec<Vec<Pos>> {
  *                  - Apply the translation `eb` - `b` to scanner-N beacons.
  *                  - Add those beacons to scanner-0's set.
  *                  - Compute the edge beacons and associated offsets of scanner-N (just like we did for scanner 0) and add them to the total set of edge beacons and offsets.
+ * 
+ * Returns (part1 answer, scanner offsets in order).
  */
-fn part1(scs: &Vec<Vec<Pos>>) -> u32 {
-    fn try_intersect(sc: &Vec<Pos>, ebs: &HashMap<Pos, HashSet<Pos>>, rots: &Vec<Rot>) -> Option<HashSet<Pos>> {
+fn part1(scs: &Vec<Vec<Pos>>) -> (u32, Vec<Pos>) {
+    fn try_intersect(sc: &Vec<Pos>, ebs: &HashMap<Pos, HashSet<Pos>>, rots: &Vec<Rot>) -> Option<(HashSet<Pos>, Pos)> {
         for b in sc {
             let boff = offsets(sc, *b);
             for (eb, ebset) in ebs.clone() {
@@ -103,8 +119,8 @@ fn part1(scs: &Vec<Vec<Pos>>) -> u32 {
                     let rboff = boff.iter().map(|b2| b2.rotate(r)).collect::<HashSet<_>>();
                     let inter = rboff.intersection(&ebset).collect::<HashSet<_>>();
                     if inter.len() >= 12 {
-                        println!("found match with scanner offset {:?}", eb - b.rotate(r));
-                        return Some(offsets(&Vec::from_iter(rboff.iter().cloned()), -eb));
+                        let scoff = eb - b.rotate(r);
+                        return Some((offsets(&Vec::from_iter(rboff.iter().cloned()), -eb), scoff));
                     }
                 }
             }
@@ -116,6 +132,7 @@ fn part1(scs: &Vec<Vec<Pos>>) -> u32 {
     let mut merged = HashSet::from([0usize]);
     let mut bacon: HashSet<Pos> = HashSet::from_iter(scs[0].iter().cloned());
     let mut ebs = edge_beacons(&scs[0]);
+    let mut scoffs = vec![Pos(0, 0, 0); scs.len()];
     while merged.len() != scs.len() {
         for (i, sc) in scs.iter().enumerate() {
             if merged.contains(&i) {
@@ -124,7 +141,9 @@ fn part1(scs: &Vec<Vec<Pos>>) -> u32 {
 
             println!("checking scanner {i}");
             match try_intersect(sc, &ebs, &rots) {
-                Some(newbs) => {
+                Some((newbs, scoff)) => {
+                    println!("found match with scanner offset {:?}", scoff);
+                    scoffs[i] = scoff;
                     bacon.extend(newbs.clone());
                     ebs.extend(edge_beacons(&Vec::from_iter(newbs.iter().cloned()))); // Add new edge beacons from current scanner.
                     merged.insert(i);
@@ -134,7 +153,7 @@ fn part1(scs: &Vec<Vec<Pos>>) -> u32 {
         }
     }
 
-    bacon.len() as u32
+    (bacon.len() as u32, scoffs)
 }
 
 fn test() {
@@ -150,8 +169,8 @@ fn test() {
     }
 }
 
-fn part2(input: &Vec<Vec<Pos>>) -> u32 {
-    0
+fn part2(scoffs: &Vec<Pos>) -> u32 {
+    iproduct!(scoffs, scoffs.clone().iter().skip(1)).map(|(&a, &b)| a.manhattan(b)).max().unwrap()
 }
 
 /**
