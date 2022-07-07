@@ -94,12 +94,17 @@ executables:
   #   - haskell
   #   - megaparsec
   #   - unordered-containers
-  d17:
-    main:       D17.main
+  # d17:
+  #   main:       D17.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  #   - megaparsec
+  d21:
+    main:       D21.main
     <<:         *exe-options
     dependencies:
     - haskell
-    - megaparsec
 
 # tests:
 #   haskell-test:
