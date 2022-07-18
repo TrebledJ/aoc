@@ -13,8 +13,8 @@ type CuboidTag = Int -- Tag for indexing cuboids so instead of storing 6 ints fo
 type CuboidLU = V.Vector Cuboid -- Cuboid lookup.
 
 type Command = (Bool, Cuboid)
-type TagUnion = [CuboidTag]
-type AlternatingUnions = [TagUnion] -- List of sets, alternating with + on even indices and - on odd indices.
+type TagUnion = [CuboidTag] -- Union of tags.
+type AlternatingUnions = [TagUnion] -- Alternating sum of unions: + on even indices, - on odd indices.
 
 main :: IO ()
 main = defaultMain defaultFile parser part1 part2
@@ -61,24 +61,22 @@ mkExpr = foldl go (mempty, []) . zip [0 ..]
     mExtra = if even (length cs) == on then [[la]] else [] -- A new union term is added if "on" and even, or "off" and odd.
 
 evalUnions :: CuboidLU -> Cuboid -> AlternatingUnions -> Int
-evalUnions lu scope =
-  foldl (\acc (i, xs) -> if even i then acc + val xs else acc - val xs) 0
-    . zip [0 ..]
+evalUnions lu scope = sum
+  . zipWith (\i ts -> (-1) ^ i * evalUnion True scope ts) [0 ..]
  where
-  val xs = evalUnion xs True scope
   -- Apply DFS to compute and sum intersections.
-  evalUnion []  _   _   = 0 -- We've hit a leaf.
-  evalUnion xs' add int = sum $ map explore $ init $ tails xs'
+  evalUnion _   _   [] = 0 -- We've hit a leaf.
+  evalUnion add int ts = sum $ map explore $ init $ tails ts
    where
-    explore (x : xs'') = case intersection int (lu V.! x) of
+    explore (tag : ts') = case intersection int (lu V.! tag) of
       Just c ->
-        let v = evalCube c
-        in  (if add then v else negate v) + evalUnion xs'' (not add) c
+        let v = evalCuboid c
+        in  (if add then v else negate v) + evalUnion (not add) c ts'
       Nothing -> 0 -- Pruning. Bye bye branch.
     explore [] = undefined
 
-evalCube :: Num a => ((a, a), (a, a), (a, a)) -> a
-evalCube ((x1, x2), (y1, y2), (z1, z2)) =
+evalCuboid :: Cuboid -> Int
+evalCuboid ((x1, x2), (y1, y2), (z1, z2)) =
   (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1)
 
 intersection :: Cuboid -> Cuboid -> Maybe Cuboid
