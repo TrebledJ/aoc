@@ -23,10 +23,11 @@ library
     , megaparsec
     , split
     , unordered-containers
+    , vector
   default-language: Haskell2010
 
-executable d21
-  main-is: D21.hs
+executable d22
+  main-is: D22.hs
   other-modules:
       D01
       D04
@@ -40,10 +41,11 @@ executable d21
       D14
       D16
       D17
+      D21
       Paths_haskell
   hs-source-dirs:
       app
-  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -main-is D21.main
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D22.main
   build-depends:
       base >=4.7 && <5
     , containers
@@ -53,4 +55,5 @@ executable d21
     , megaparsec
     , split
     , unordered-containers
+    , vector
   default-language: Haskell2010

@@ -1,24 +1,27 @@
 module D22 where
 
-import Control.Monad
+import           Control.Monad
+import           Data.List
 import           Data.Maybe
--- import Data.Vector
+import qualified Data.Vector as V
 import           Text.Megaparsec
 import           Text.Megaparsec.Char
 import           Utils
 
 type Cuboid = ((Int, Int), (Int, Int), (Int, Int))
+type CuboidL = Int -- Cuboid label to index cuboids.
+type CuboidLU = V.Vector Cuboid -- Cuboid lookup.
 
 data Command = Command
   { on    :: Bool
   , bound :: Cuboid
   }
   deriving Show
--- data Cuboid = Cuboid Bound3
--- data CuboidSet = Value Cuboid | Sub Cuboid [Cuboid]
-data CuboidExpr = ENull | ECuboid Cuboid | EAdd CuboidExpr CuboidExpr | ESub CuboidExpr CuboidExpr | EInter [CuboidExpr] deriving (Eq, Show)
+type UnionList a = [a]
+type CountingSet a = [UnionList a] -- List of sets, alternating + (even index) and - (odd index).
 
-
+maxCuboid :: Cuboid
+maxCuboid = ((-200000, 200000), (-200000, 200000), (-200000, 200000))
 
 
 main :: IO ()
@@ -44,13 +47,20 @@ parser = flip sepBy1 newline $ do
   z2 <- integer
   return $ Command (cmd == "on") ((x1, x2), (y1, y2), (z1, z2))
 
-part1 :: a -> Int
-part1 x = 0
+part1 :: [Command] -> Int
+part1 _ = 0 -- Implemented in Rust.
 
 part2 :: [Command] -> Int
-part2 cmds = traceShow expr $ eval expr
-  where expr = mkExpr cmds 
+part2 cmds = countSet lu set where (lu, set) = mkExpr cmds
 
+mkExpr :: [Command] -> (CuboidLU, CountingSet CuboidL)
+mkExpr = foldl go (mempty, []) . zip [0 ..]
+ where
+  go (lu, cs) (la, Command { on = o, bound = b }) =
+    (lu V.++ V.fromList [b], map unionTerm cs ++ mExtra)
+   where
+    unionTerm xs = xs ++ [la]
+    mExtra = if o == even (length cs) then [[la]] else [] -- A new union term is added if "on" and even, or "off" and odd.
 
 intersection :: Cuboid -> Cuboid -> Maybe Cuboid
 intersection (ax, ay, az) (bx, by, bz)
@@ -69,64 +79,78 @@ intersection (ax, ay, az) (bx, by, bz)
 rangeIntersection :: (Int, Int) -> (Int, Int) -> Maybe (Int, Int)
 rangeIntersection (a1, a2) (b1, b2) | a1 <= b1 && b2 <= a2 = Just (b1, b2)
                                     | b1 <= a1 && a2 <= b2 = Just (a1, a2)
+                                    | a2 < b1 || b2 < a1   = Nothing
                                     | a1 <= b1 && a2 <= b2 = Just (b1, a2)
                                     | b1 <= a1 && b2 <= a2 = Just (a1, b2)
-                                    | otherwise            = Nothing
+                                    | otherwise            = undefined
 
-infixl 7 |&|
-infixl 5 |+|, |-|
-(|+|), (|-|), (|&|) :: CuboidExpr -> CuboidExpr -> CuboidExpr
-(|+|) = EAdd
-(|-|) = ESub
-(|&|) (EAdd x y) c@(ECuboid _ ) = (x |&| c) |+| (y |&| c)
-(|&|) (ESub x y) c@(ECuboid _ ) = (x |&| c) |-| (y |&| c)
-(|&|) (EInter xs) (  EInter  ys) = EInter (xs ++ ys)
-(|&|) (EInter xs) y              = EInter (xs ++ [y])
-(|&|) x           (EInter ys)    = EInter (x : ys)
-(|&|) (ECuboid c) (ECuboid d) | isNothing (intersection c d) = ENull -- Smol optimisation.
-(|&|) x y                        = EInter [x, y]
+-- |A u B|
+-- on:  |A u B u C|
+-- off: |A u B| - |(A u B) n C|
+--      |A u B| - |(A u B) n C| + |C| - |C| = |A u B u C| - |C|
+-- off,on:  |A u B u C| - |C| + |D| - |(A u B u C) n D| + |C n D|
+--          |A u B u C u D| - |C| + |C n D|
+--          |A u B u C u D| - |C u D| + |D|
+-- off,on,on:   |A u B u C u D| - |C u D| + |D| + |E| - |(A u B u C u D) n E| + |(C u D) n E| - |D n E|
+--              |A u B u C u D u E| - |C u D u E| + |D u E|
+-- off,on,on,on:  |A u B u C u D u E| - |C u D u E| + |D u E| + |F| - |(A u B u C u D u E) n F| + |(C u D u E) n F| - |(D u E) n F|
+--                |A u B u C u D u E u F| - |C u D u E u F| + |D u E u F|
+-- off,on,off:  |A u B u C u D| - |C u D| + |D| - |(A u B u C u D) n E| + |(C u D) n E| - |D n E|
+--              |A u B u C u D u E| - |C u D u E| + |D| - |D n E|
+--              |A u B u C u D u E| - |C u D u E| + |D u E| - |E|
+-- off,off: |A u B u C| - |C| - |(A u B u C) n D| + |C n D|
+--          |A u B u C u D| - |C| - |D| + |C n D|
+--          |A u B u C u D| - |C u D|
+-- off,off,on:  |A u B u C u D| - |C u D| + |E| - |(A u B u C u D) n E| + |(C u D) n E|
+--              |A u B u C u D u E| - |C u D| + |(C u D) n E|
+--              |A u B u C u D u E| - |C u D u E| + |E|
+-- off,off,off: |A u B u C u D| - |C u D| - |(A u B u C u D) n E| + |(C u D) n E|
+--              |A u B u C u D u E| - |C u D u E|
+-- 
 
-mkExpr :: [Command] -> CuboidExpr
-mkExpr cmds = fst $ foldl go (ENull, 0) cmds
+-- |X u Y| = |X| + |Y| - |X n Y|
+
+{-
++ A
+  - A n B
+    + A n B n C
+  - A n C
++ B
+  - B n C
++ C
+
+def f(A, n, d, set):
+  for (i=d; i < n; i++)
+    set += A[i]
+    f(A, n, d+1)
+    set -= A[i]
+-}
+
+get :: CuboidLU -> CuboidL -> Cuboid
+get = (V.!)
+
+countSet :: CuboidLU -> CountingSet CuboidL -> Int
+countSet lu =
+  foldl (\acc (i, xs) -> if even i then acc + val xs else acc - val xs) 0
+    . zip [0 ..]
  where
-  cubes = map bound cmds
-  -- go expr Command { on = o, bound = b } = (\x -> traceShow (eval x) x) $ trim $ if o
-  --   then expr |+| cub |-| inter
-  --   else expr |-| inter
-  --  where
-  --   cub   = ECuboid b
-  --   inter = expr |&| cub
-  go (expr, lit) Command { on = o, bound = b } = if o
-    then (trim $ expr |+| cub |-| inter, trace' $ lit + eval cub - eval inter)
-    else (trim $ expr |-| inter, trace' $ lit - eval inter)
+  val xs | trace ("val: evaluating" ++$ xs) False = undefined
+  val xs = evalUnion xs True maxCuboid
+  -- evalUnion xs _ int | trace ("evalUnion: evaluating" ++$ xs ++$ int) False = undefined
+  evalUnion []  _   _   = 0
+  evalUnion xs' add int = sum $ map explore $ init $ tails xs'
    where
-    cub   = ECuboid b
-    inter = expr |&| cub
+    explore (x : xs'') = case intersection int (lu `get` x) of
+      Just c ->
+        let v = evalCube c
+        in  (if add then v else negate v) + evalUnion xs'' (not add) c
+      Nothing -> 0 -- Short circuit out of this DFS branch.
+    explore [] = undefined
 
-trim :: CuboidExpr -> CuboidExpr
-trim (EAdd x y) = case trim x of -- TODO: simplify this ugliness?
-  ENull -> trim y
-  x'    -> case trim y of
-    ENull -> x'
-    y'    -> EAdd x' y'
-trim (ESub x y) = case trim x of
-  ENull -> trim y
-  x'    -> case trim y of
-    ENull -> x'
-    y'    -> ESub x' y'
-trim (EInter xs) | ENull `elem` xs = ENull
-                 | otherwise       = EInter (map trim xs)
-trim x = x
-
-eval :: CuboidExpr -> Int
-eval (ECuboid ((x1, x2), (y1, y2), (z1, z2))) = (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1)
-eval (EAdd x y) = eval x + eval y
-eval (ESub x y) = eval x - eval y
-eval (EInter xs) = maybe 0 (eval . ECuboid) $ foldM1 intersection $ map toCuboid xs
-  where toCuboid (ECuboid x) = x
-        toCuboid _ = undefined
-eval ENull = 0
+evalCube :: Num a => ((a, a), (a, a), (a, a)) -> a
+evalCube ((x1, x2), (y1, y2), (z1, z2)) =
+  (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1)
 
 foldM1 :: Monad m => (a -> a -> m a) -> [a] -> m a
-foldM1 f (x:xs) = foldM f x xs
-foldM1 _ _ = undefined
+foldM1 f (x : xs) = foldM f x xs
+foldM1 _ []       = undefined

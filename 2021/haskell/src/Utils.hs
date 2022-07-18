@@ -104,6 +104,10 @@ traceShow = T.traceShow
 trace' :: (Show a) => a -> a
 trace' x = T.traceShow x x
 
+-- Helper for concatenating stuff to strings.
+(++$) :: (Show a) => String -> a -> String
+(++$) s x = s ++ " " ++ show x
+
 counter :: (Hashable a, Eq a) => [a] -> M.HashMap a Int
 counter = foldr (\x -> M.insertWith (+) x 1) M.empty
 

@@ -8,6 +8,7 @@ dependencies:
 - matrix
 - containers
 - unordered-containers
+- vector
 
 library:
   source-dirs: src
@@ -17,6 +18,7 @@ _exe-ghc-options: &exe-ghc-options
  - -threaded
  - -Wall
  - -Wno-type-defaults
+ - -Wno-unused-do-bind
 
 _exe_options:     &exe-options
   source-dirs:    [app]
@@ -100,8 +102,13 @@ executables:
   #   dependencies:
   #   - haskell
   #   - megaparsec
-  d21:
-    main:       D21.main
+  # d21:
+  #   main:       D21.main
+  #   <<:         *exe-options
+  #   dependencies:
+  #   - haskell
+  d22:
+    main:       D22.main
     <<:         *exe-options
     dependencies:
     - haskell
