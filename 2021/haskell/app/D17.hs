@@ -83,7 +83,7 @@ inverseStep v0 y = (v0 + 0.5) + sqrt ((v0 + 0.5) ^^ 2 - 2 * fromIntegral y)
 
 -- Helper function for debugging.
 simulate :: (Int, Int, Int, Int) -> Int -> Int -> Int
-simulate (xmin, xmax, ymin, ymax) u0 v0 = simulate' 0 0 0 u0 v0
+simulate (xmin, xmax, ymin, ymax) = simulate' 0 0 0
  where
   simulate' i x y u v
     | trace
@@ -108,5 +108,5 @@ simulate (xmin, xmax, ymin, ymax) u0 v0 = simulate' 0 0 0 u0 v0
     | y < ymin = trace "fail, overshot y" 0
     | otherwise = simulate' (i + 1) (x + u) (y + v) (u - sgn u) (v - 1)
   sgn x | x > 0     = 1
-        | x < 0     = (-1)
+        | x < 0     = -1
         | otherwise = 0
