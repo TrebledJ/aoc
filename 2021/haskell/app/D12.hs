@@ -1,4 +1,3 @@
--- Warning: part2 is horribly slow.
 module D12 where
 
 import           Data.Char
