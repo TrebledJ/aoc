@@ -1,16 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ImplicitParams #-}
 
 module D25 where
 
-import           Control.Monad
 import           Control.Monad.ST
+import qualified Criterion.Main                as C
 import           Data.Array.ST
 import           Data.Array.Unboxed
 import           Data.STRef
 import qualified Data.Vector.Unboxed           as V
-import qualified Data.Vector.Unboxed.Mutable   as MV
 import           Utils
-import qualified Criterion.Main as C
 
 
 type Cell = Char
@@ -18,10 +17,9 @@ type IGrid = UArray (Int, Int) Cell
 
 
 main :: IO ()
--- main = defaultMain defaultFile parse part1 part2
-main = criterionMain defaultFile parse $ \input -> [
-    C.bench "part1" $ C.whnf part1 input
-  ]
+main = defaultMain defaultFile parse part1 part2
+-- main = criterionMain defaultFile parse
+--   $ \input -> [C.bench "part1" $ C.whnf part1 input]
 
 defaultFile :: String
 defaultFile = "../input/d25.txt"
@@ -44,9 +42,7 @@ debugM s = trace s (return ())
 {-
   Implementation Note:
 
-  We use V.Vector (Int, Int) to store `rights` and `downs` since
-  unboxed arrays can't store (Int, Int).
-
+  We use V.Vector (Int, Int) to store `rights` and `downs` since unboxed arrays can't store (Int, Int).
   https://stackoverflow.com/q/13461020/10239789
 -}
 part1 :: (IGrid, Int, Int, V.Vector (Int, Int), V.Vector (Int, Int)) -> Int
@@ -54,34 +50,37 @@ part1 (g, w, h, rs, ds) = part1' g rs ds 1
  where
   part1' g rs ds i = runST $ do
     moved <- newSTRef False
-    g'    <- thaw g :: ST s (STUArray s (Int, Int) Cell)
-    rs'   <- V.thaw rs
-    ds'   <- V.thaw ds
+    newg  <- thaw g :: ST s (STUArray s (Int, Int) Cell)
 
-    forM_ [0 .. MV.length rs' - 1] $ \ind -> do
-      let cur = rs V.! ind
+    rs'   <- V.forM rs $ \cur -> do
       let tar = eastof cur
-      when (isfree g tar) $ do
-        writeArray g' cur '.'
-        writeArray g' tar '>'
-        MV.write rs' ind tar
-        writeSTRef moved True
+      if isfree g tar
+        then do
+          writeArray newg cur '.' -- Replace old cell with empty.
+          writeArray newg tar '>' -- Move cucumber to new cell.
+          writeSTRef moved True   -- Set the moved flag.
+          return tar              -- Position has changed.
+        else do
+          return cur              -- Position has not changed.
 
-    g <- freeze g'
-    forM_ [0 .. MV.length ds' - 1] $ \ind -> do
-      let cur = ds V.! ind
+    g   <- freeze newg -- Copy into old g to save the state after east-facing cucumbers have moved.
+    ds' <- V.forM ds $ \cur -> do
       let tar = southof cur
-      when (isfree g tar) $ do
-        writeArray g' cur '.'
-        writeArray g' tar 'v'
-        MV.write ds' ind tar
-        writeSTRef moved True
+      if isfree g tar
+        then do
+          writeArray newg cur '.'
+          writeArray newg tar 'v'
+          writeSTRef moved True
+          return tar
+        else do
+          return cur
 
     moved' <- readSTRef moved
     if moved'
-      then do
-        liftM4 part1' (freeze g') (V.freeze rs') (V.freeze ds') (return (i + 1))
-      else do
+      then do -- If something moved, keep looping.
+        g' <- freeze newg
+        return $ part1' g' rs' ds' (i + 1)
+      else do -- If nothing has moved, return current iteration.
         return i
 
   eastof (y, x) | x + 1 == w = (y, 0)
