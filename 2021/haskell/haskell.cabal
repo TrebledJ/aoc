@@ -83,7 +83,8 @@ executable d25
       app
   ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D25.main
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
     , containers
     , criterion
     , hashable

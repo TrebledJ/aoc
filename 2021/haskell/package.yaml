@@ -113,6 +113,12 @@ executables:
     <<:         *exe-options
     dependencies:
     - haskell
+  d25:
+    main:       D25.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - array
 
 # tests:
 #   haskell-test:
