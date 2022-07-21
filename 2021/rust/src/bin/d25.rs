@@ -38,7 +38,11 @@ fn main() {
     let contents = fs::read_to_string(filename).unwrap();
     let cmds = parse(contents);
 
+    use std::time::Instant;
+    let now = Instant::now();
     println!("part1: {}", part1(&cmds));
+    let elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
 }
 
 fn parse(contents: String) -> Data {

@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
--- {-# LANGUAGE ImplicitParams #-}
 
 module D25 where
 
@@ -11,6 +10,7 @@ import           Data.STRef
 import qualified Data.Vector.Unboxed           as V
 import qualified Data.Vector.Unboxed.Mutable   as MV
 import           Utils
+import qualified Criterion.Main as C
 
 
 type Cell = Char
@@ -18,7 +18,10 @@ type IGrid = UArray (Int, Int) Cell
 
 
 main :: IO ()
-main = defaultMain defaultFile parse part1 part2
+-- main = defaultMain defaultFile parse part1 part2
+main = criterionMain defaultFile parse $ \input -> [
+    C.bench "part1" $ C.whnf part1 input
+  ]
 
 defaultFile :: String
 defaultFile = "../input/d25.txt"
@@ -47,9 +50,9 @@ debugM s = trace s (return ())
   https://stackoverflow.com/q/13461020/10239789
 -}
 part1 :: (IGrid, Int, Int, V.Vector (Int, Int), V.Vector (Int, Int)) -> Int
-part1 (g, w, h, rs, ds) = part1' (g, rs, ds, 1)
+part1 (g, w, h, rs, ds) = part1' g rs ds 1
  where
-  part1' (g, rs, ds, i) = runST $ do
+  part1' g rs ds i = runST $ do
     moved <- newSTRef False
     g'    <- thaw g :: ST s (STUArray s (Int, Int) Cell)
     rs'   <- V.thaw rs
@@ -77,11 +80,7 @@ part1 (g, w, h, rs, ds) = part1' (g, rs, ds, 1)
     moved' <- readSTRef moved
     if moved'
       then do
-        g  <- freeze g'
-        -- debugM $ "iter" ++$ i ++ "\n" ++ disp w h g ++ "\n"
-        rs <- V.freeze rs'
-        ds <- V.freeze ds'
-        return $ part1' (g, rs, ds, i + 1)
+        liftM4 part1' (freeze g') (V.freeze rs') (V.freeze ds') (return (i + 1))
       else do
         return i
 
