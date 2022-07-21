@@ -2,6 +2,8 @@
 module Utils where
 
 import           Control.Monad
+import qualified Criterion.Main                as C
+import           Data.Bifunctor                 ( Bifunctor(second) )
 import           Data.Char                      ( digitToInt )
 import qualified Data.HashMap.Strict           as M
 import           Data.Hashable                  ( Hashable )
@@ -59,7 +61,7 @@ defaultMain
   -> (a -> c) -- Function to solve part 2.
   -> IO ()
 defaultMain defaultFile parse part1 part2 = do
-  opts  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
+  (opts, _)  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   input <- doParse parse (file opts) <$> readFile (file opts)
   when (runPart1 opts) $ do
     putStr "part1: "
@@ -68,23 +70,34 @@ defaultMain defaultFile parse part1 part2 = do
     putStr "part2: "
     print' $ part2 input
 
+criterionMain
+  :: (ParseLike p)
+  => String   -- Default input file, if no -f option was provided from args.
+  -> p a      -- Any instance of ParseLike, e.g. a function (String -> a) or a parser combinator (Parser a).
+  -> (a -> [C.Benchmark]) -- Criterion IO () benchmarking function.
+  -> IO ()
+criterionMain defaultFile parse getBench = do
+  (opts, rest)  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
+  input <- doParse parse (file opts) <$> readFile (file opts)
+  withArgs rest $ C.defaultMain $ getBench input
+
 nullOpts :: Options
 nullOpts = Options { file = "", runPart1 = False, runPart2 = False }
 
-parseArgs :: Options -> [String] -> Options
+parseArgs :: Options -> [String] -> (Options, [String])
 parseArgs o [] = if not (runPart1 o) && not (runPart2 o)
-  then o { runPart1 = True, runPart2 = True }
-  else o
+  then (o { runPart1 = True, runPart2 = True }, [])
+  else (o, [])
 parseArgs o ("-f" : f : rest) = parseArgs (o { file = f }) rest
 parseArgs o ("p1"     : rest) = parseArgs (o { runPart1 = True }) rest
 parseArgs o ("p2"     : rest) = parseArgs (o { runPart2 = True }) rest
-parseArgs o (_        : rest) = o
+parseArgs o (arg      : rest) = second (arg :) $ parseArgs o rest
 
 number :: (Num i, Read i) => Parser i
 number = read <$> some digitChar
 
 integer :: (Num i, Read i, Show i) => Parser i
-integer = ((0 -) <$> try (char '-' *> number)) <|> number
+integer = (negate <$> try (char '-' *> number)) <|> number
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p

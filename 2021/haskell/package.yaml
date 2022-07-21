@@ -9,6 +9,7 @@ dependencies:
 - containers
 - unordered-containers
 - vector
+- criterion
 
 library:
   source-dirs: src

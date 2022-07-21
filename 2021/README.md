@@ -24,4 +24,4 @@ stack run d01 -- p1 # Run only part 1.
 
 By default, both parts 1 and 2 are run.
 
-N.B. Haskell Stack will compile all executables in one go, so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml.
+N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml.

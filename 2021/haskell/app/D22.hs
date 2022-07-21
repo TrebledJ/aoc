@@ -1,6 +1,8 @@
 -- See 2021/writeups/d22.md.
 module D22 where
 
+import qualified Criterion.Main                as C
+import           Data.Bifunctor
 import           Data.List
 import           Data.Maybe
 import qualified Data.Vector                   as V
@@ -18,6 +20,14 @@ type AlternatingUnions = [TagUnion] -- Alternating sum of unions: + on even indi
 
 main :: IO ()
 main = defaultMain defaultFile parser part1 part2
+-- main = criterionMain defaultFile parser $ \input ->
+--   [ C.bgroup "part1" [C.bench "part1" $ C.whnf part1 input]
+--   , C.bgroup
+--     "part2"
+--     [ C.bench "sum of unions" $ C.whnf part2 input
+--     , C.bench "sum of intersections" $ C.whnf part2i input
+--     ]
+--   ]
 
 defaultFile :: String
 defaultFile = "../input/d22.txt"
@@ -54,11 +64,9 @@ cuboidWithRadius r = ((-r, r), (-r, r), (-r, r))
 mkExpr :: [Command] -> (CuboidLU, AlternatingUnions)
 mkExpr = foldl go (mempty, []) . zip [0 ..]
  where
-  go (lu, cs) (la, (on, bounds)) =
-    (lu <> pure bounds, map unionTerm cs ++ mExtra)
-   where
-    unionTerm xs = xs ++ [la]
-    mExtra = if even (length cs) == on then [[la]] else [] -- A new union term is added if "on" and even, or "off" and odd.
+  go (lu, cs) (tag, (on, cuboid)) =
+    (lu <> pure cuboid, map (tag :) cs ++ extra)
+    where extra = if even (length cs) == on then [[tag]] else [] -- A new union term is added if "on" and even, or "off" and odd.
 
 evalUnions :: CuboidLU -> Cuboid -> AlternatingUnions -> Int
 evalUnions lu scope = sum
@@ -94,9 +102,30 @@ intersection (ax, ay, az) (bx, by, bz)
   zint = rangeIntersection az bz
 
 rangeIntersection :: (Int, Int) -> (Int, Int) -> Maybe (Int, Int)
-rangeIntersection (a1, a2) (b1, b2) | a1 <= b1 && b2 <= a2 = Just (b1, b2)
+rangeIntersection (a1, a2) (b1, b2) | a2 < b1 || b2 < a1   = Nothing
+                                    | a1 <= b1 && b2 <= a2 = Just (b1, b2)
                                     | b1 <= a1 && a2 <= b2 = Just (a1, a2)
-                                    | a2 < b1 || b2 < a1   = Nothing
                                     | a1 <= b1 && a2 <= b2 = Just (b1, a2)
                                     | b1 <= a1 && b2 <= a2 = Just (a1, b2)
                                     | otherwise            = undefined
+
+
+type ITerm = (Bool,   -- Whether to add (True) or subtract (False) this term.
+              Cuboid) -- The cuboid belonging to the term.
+
+part2i :: [Command] -> Int
+part2i = evalExpri . mkExpri
+
+mkExpri :: [Command] -> [ITerm]
+mkExpri = foldl go []
+ where
+  go terms (on, cuboid) =
+    terms ++ rest ++ (if on then [(True, cuboid)] else [])
+   where
+    rest = map (second fromJust) $ filter (isJust . snd) $ map
+      (bimap not (intersection cuboid))
+      terms
+
+evalExpri :: [ITerm] -> Int
+evalExpri terms =
+  sum $ map (\(b, c) -> (if b then id else negate) $ evalCuboid c) terms

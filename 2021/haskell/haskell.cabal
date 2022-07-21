@@ -18,6 +18,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , criterion
     , hashable
     , matrix
     , megaparsec
@@ -42,6 +43,7 @@ executable d22
       D16
       D17
       D21
+      D25
       Paths_haskell
   hs-source-dirs:
       app
@@ -49,6 +51,41 @@ executable d22
   build-depends:
       base >=4.7 && <5
     , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d25
+  main-is: D25.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D25.main
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , criterion
     , hashable
     , haskell
     , matrix
