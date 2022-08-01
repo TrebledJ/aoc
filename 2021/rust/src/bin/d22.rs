@@ -21,7 +21,10 @@ fn main() {
     println!("part2: {}", part2(&cmds));
     println!("Elapsed: {:.2?}", now.elapsed());
     let now = Instant::now();
-    println!("part2: {}", part2_opt(&cmds));
+    println!("part2 (opt): {}", part2_opt(&cmds));
+    println!("Elapsed: {:.2?}", now.elapsed());
+    let now = Instant::now();
+    println!("part2 (opt2?): {}", part2_opt2(&cmds));
     println!("Elapsed: {:.2?}", now.elapsed());
 }
 
@@ -156,6 +159,46 @@ fn part2_opt(cmds: &Vec<Command>) -> u64 {
         .enumerate()
         .map(|(i, u)| eval_union(&lookup, i % 2 == 0, scope, *u))
         .sum::<i64>() as u64
+}
+
+fn part2_opt2(cmds: &Vec<Command>) -> u64 {
+    // Here we optimise for computations. Instead of repeating computations, we reuse previous computations.
+    // n=4, [ 0, 2, 3 ] ==> |L[0] u L[1] u L[2] u L[3]| - |L[2] u L[3]| + |L[3]|
+    // Instead of computing each term individually, we compute |L[3]| first, use the result in |L[2] u L[3]|,
+    // and finally use _that_ result in |L[0] u L[1] u L[2] u L[3]|.
+    let mut alternating_unions: LinkedList<usize> = LinkedList::new();
+    let lookup = cmds.iter().map(|&Command(_, c)| c).collect::<Vec<_>>();
+    for (i, &Command(on, _)) in cmds.iter().enumerate() {
+        if (alternating_unions.len() % 2 == 0) == on {
+            // A new union term is added if "on" and even, or "off" and odd.
+            alternating_unions.push_back(i);
+        }
+    }
+
+    /*
+    f(A, B + C - (B n C), |B| + |C| - |B n C|):
+        (
+            B + C - (B n C) + A - A n B - A n C + A n B n C,
+            |.| + |A| - |A n .|
+        )
+    */
+    let n = lookup.len();
+    let mut set: LinkedList<(bool, Cuboid)> = LinkedList::new();
+    let mut sum = 0i64;
+    let mut val = 0i64;
+    let mut prev_u = n;
+    for &u in alternating_unions.iter().rev() {
+        for i in u..prev_u {
+            let mut intersects = set.iter().map(|(add, s)| (!add, intersect(s, &lookup[i]))).filter(|(_, x)| x.is_some()).map(|(b, x)| (b, x.unwrap())).collect::<LinkedList<_>>();
+            val += eval_cuboid(&lookup[i]) as i64;
+            val += intersects.iter().map(|(add, c)| (if *add { 1 } else { -1 }) * eval_cuboid(c) as i64).sum::<i64>();
+            set.push_back((true, lookup[i]));
+            set.append(&mut intersects);
+        }
+        prev_u = u;
+        sum = val - sum;
+    }
+    sum as u64
 }
 
 fn eval_cuboid(((x1, x2), (y1, y2), (z1, z2)): &Cuboid) -> u64 {
