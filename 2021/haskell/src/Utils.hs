@@ -93,11 +93,11 @@ parseArgs o ("p1"     : rest) = parseArgs (o { runPart1 = True }) rest
 parseArgs o ("p2"     : rest) = parseArgs (o { runPart2 = True }) rest
 parseArgs o (arg      : rest) = second (arg :) $ parseArgs o rest
 
-number :: (Num i, Read i) => Parser i
-number = read <$> some digitChar
+digits :: (Num i, Read i) => Parser i
+digits = read <$> some digitChar
 
 integer :: (Num i, Read i, Show i) => Parser i
-integer = (negate <$> try (char '-' *> number)) <|> number
+integer = (negate <$> try (char '-' *> digits)) <|> digits
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p

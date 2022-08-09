@@ -21,9 +21,9 @@ parser :: Parser ([Coor], [Fold])
 parser =
   (,) <$> some (coor <* newline) <* newline <*> folds `sepBy1` newline <* eof
  where
-  coor = (,) <$> number <* char ',' <*> number
+  coor = (,) <$> digits <* char ',' <*> digits
   folds =
-    (,) <$ string "fold along " <*> (axis <$> letterChar) <* char '=' <*> number
+    (,) <$ string "fold along " <*> (axis <$> letterChar) <* char '=' <*> digits
   axis 'x' = X
   axis _   = Y
 
