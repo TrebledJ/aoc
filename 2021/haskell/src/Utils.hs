@@ -7,6 +7,7 @@ import           Data.Bifunctor                 ( Bifunctor(second) )
 import           Data.Char                      ( digitToInt )
 import qualified Data.HashMap.Strict           as M
 import           Data.Hashable                  ( Hashable )
+import           Data.List                      ( foldl' )
 import           Data.Void                      ( Void )
 import           Debug.Trace                   as T
 import           System.Environment
@@ -45,7 +46,7 @@ class ParseLike p where
   doParse :: p a -> String -> String -> a
 
 instance ParseLike ((->) String) where
-  doParse f _ = f
+  doParse f _ = f  -- Apply a parse function `f` on `contents`.
 
 instance ParseLike Parser where
   doParse p file txt = case runParser p file txt of
@@ -96,7 +97,7 @@ parseArgs o (arg      : rest) = second (arg :) $ parseArgs o rest
 digits :: (Num i, Read i) => Parser i
 digits = read <$> some digitChar
 
-integer :: (Num i, Read i, Show i) => Parser i
+integer :: (Num i, Read i) => Parser i
 integer = (negate <$> try (char '-' *> digits)) <|> digits
 
 count :: (a -> Bool) -> [a] -> Int
