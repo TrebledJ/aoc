@@ -125,7 +125,7 @@ counter :: (Hashable a, Eq a) => [a] -> M.HashMap a Int
 counter = foldr (\x -> M.insertWith (+) x 1) M.empty
 
 fromBinary :: String -> Int
-fromBinary = foldl (\acc d -> 2 * acc + digitToInt d) 0
+fromBinary = foldl' (\acc d -> 2 * acc + digitToInt d) 0
 
 foldM1 :: Monad m => (a -> a -> m a) -> [a] -> m a
 foldM1 f (x : xs) = foldM f x xs
