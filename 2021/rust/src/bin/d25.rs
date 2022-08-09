@@ -41,8 +41,7 @@ fn main() {
     use std::time::Instant;
     let now = Instant::now();
     println!("part1: {}", part1(&cmds));
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    println!("Elapsed: {:.2?}", now.elapsed());
 }
 
 fn parse(contents: String) -> Data {
