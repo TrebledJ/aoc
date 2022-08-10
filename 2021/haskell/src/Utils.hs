@@ -7,6 +7,7 @@ import           Data.Bifunctor                 ( Bifunctor(second) )
 import           Data.Char                      ( digitToInt )
 import qualified Data.HashMap.Strict           as M
 import           Data.Hashable                  ( Hashable )
+import           Data.List                      ( foldl' )
 import           Data.Void                      ( Void )
 import           Debug.Trace                   as T
 import           System.Environment
@@ -45,7 +46,7 @@ class ParseLike p where
   doParse :: p a -> String -> String -> a
 
 instance ParseLike ((->) String) where
-  doParse f _ = f
+  doParse f _ = f  -- Apply a parse function `f` on `contents`.
 
 instance ParseLike Parser where
   doParse p file txt = case runParser p file txt of
@@ -93,11 +94,11 @@ parseArgs o ("p1"     : rest) = parseArgs (o { runPart1 = True }) rest
 parseArgs o ("p2"     : rest) = parseArgs (o { runPart2 = True }) rest
 parseArgs o (arg      : rest) = second (arg :) $ parseArgs o rest
 
-number :: (Num i, Read i) => Parser i
-number = read <$> some digitChar
+digits :: (Num i, Read i) => Parser i
+digits = read <$> some digitChar
 
-integer :: (Num i, Read i, Show i) => Parser i
-integer = (negate <$> try (char '-' *> number)) <|> number
+integer :: (Num i, Read i) => Parser i
+integer = (negate <$> try (char '-' *> digits)) <|> digits
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p
@@ -125,7 +126,7 @@ counter :: (Hashable a, Eq a) => [a] -> M.HashMap a Int
 counter = foldr (\x -> M.insertWith (+) x 1) M.empty
 
 fromBinary :: String -> Int
-fromBinary = foldl (\acc d -> 2 * acc + digitToInt d) 0
+fromBinary = foldl' (\acc d -> 2 * acc + digitToInt d) 0
 
 foldM1 :: Monad m => (a -> a -> m a) -> [a] -> m a
 foldM1 f (x : xs) = foldM f x xs

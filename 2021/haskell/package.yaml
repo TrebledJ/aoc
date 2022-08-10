@@ -27,88 +27,88 @@ _exe_options:     &exe-options
   ghc-options:    *exe-ghc-options
 
 executables:
-  # d01:
-  #   main:       D01.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  # d04:
-  #   main:       D04.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - split
-  # d06:
-  #   main:       D06.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - matrix
-  #   - split
-  # d07:
-  #   main:       D07.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - split
-  # d08:
-  #   main:       D08.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - split
-  #   - containers
-  # d09:
-  #   main:       D09.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - unordered-containers
-  # d10:
-  #   main:       D10.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  # d12:
-  #   main:       D12.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - split
-  #   - unordered-containers
-  #   - hashable
-  # d13:
-  #   main:       D13.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - megaparsec
-  #   - unordered-containers
-  # d14:
-  #   main:       D14.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - megaparsec
-  #   - unordered-containers
-  # d16:
-  #   main:       D16.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - megaparsec
-  #   - unordered-containers
-  # d17:
-  #   main:       D17.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
-  #   - megaparsec
-  # d21:
-  #   main:       D21.main
-  #   <<:         *exe-options
-  #   dependencies:
-  #   - haskell
+  d01:
+    main:       D01.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+  d04:
+    main:       D04.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - split
+  d06:
+    main:       D06.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - matrix
+    - split
+  d07:
+    main:       D07.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - split
+  d08:
+    main:       D08.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - split
+    - containers
+  d09:
+    main:       D09.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - unordered-containers
+  d10:
+    main:       D10.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+  d12:
+    main:       D12.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - split
+    - unordered-containers
+    - hashable
+  d13:
+    main:       D13.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+    - unordered-containers
+  d14:
+    main:       D14.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+    - unordered-containers
+  d16:
+    main:       D16.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+    - unordered-containers
+  d17:
+    main:       D17.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
+    - megaparsec
+  d21:
+    main:       D21.main
+    <<:         *exe-options
+    dependencies:
+    - haskell
   d22:
     main:       D22.main
     <<:         *exe-options

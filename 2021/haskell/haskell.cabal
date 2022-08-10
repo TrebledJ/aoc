@@ -28,6 +28,461 @@ library
     , vector
   default-language: Haskell2010
 
+executable d01
+  main-is: D01.hs
+  other-modules:
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D01.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d04
+  main-is: D04.hs
+  other-modules:
+      D01
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D04.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d06
+  main-is: D06.hs
+  other-modules:
+      D01
+      D04
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D06.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d07
+  main-is: D07.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D07.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d08
+  main-is: D08.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D08.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d09
+  main-is: D09.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D09.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d10
+  main-is: D10.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D12
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D10.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d12
+  main-is: D12.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D13
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D12.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d13
+  main-is: D13.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D14
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D13.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d14
+  main-is: D14.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D16
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D14.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d16
+  main-is: D16.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D17
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D16.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d17
+  main-is: D17.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D21
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D17.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable d21
+  main-is: D21.hs
+  other-modules:
+      D01
+      D04
+      D06
+      D07
+      D08
+      D09
+      D10
+      D12
+      D13
+      D14
+      D16
+      D17
+      D22
+      D25
+      Paths_haskell
+  hs-source-dirs:
+      app
+  ghc-options: -O2 -threaded -Wall -Wno-type-defaults -Wno-unused-do-bind -main-is D21.main
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , containers
+    , criterion
+    , hashable
+    , haskell
+    , matrix
+    , megaparsec
+    , split
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
 executable d22
   main-is: D22.hs
   other-modules:
