@@ -189,9 +189,17 @@ fn part2_opt2(cmds: &Vec<Command>) -> u64 {
     let mut prev_u = n;
     for &u in alternating_unions.iter().rev() {
         for i in u..prev_u {
-            let mut intersects = set.iter().map(|(add, s)| (!add, intersect(s, &lookup[i]))).filter(|(_, x)| x.is_some()).map(|(b, x)| (b, x.unwrap())).collect::<LinkedList<_>>();
+            let mut intersects = set
+                .iter()
+                .map(|(add, s)| (!add, intersect(s, &lookup[i])))
+                .filter(|(_, x)| x.is_some())
+                .map(|(b, x)| (b, x.unwrap()))
+                .collect::<LinkedList<_>>();
             val += eval_cuboid(&lookup[i]) as i64;
-            val += intersects.iter().map(|(add, c)| (if *add { 1 } else { -1 }) * eval_cuboid(c) as i64).sum::<i64>();
+            val += intersects
+                .iter()
+                .map(|(add, c)| (if *add { 1 } else { -1 }) * eval_cuboid(c) as i64)
+                .sum::<i64>();
             set.push_back((true, lookup[i]));
             set.append(&mut intersects);
         }
