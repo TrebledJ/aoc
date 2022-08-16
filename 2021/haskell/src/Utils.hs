@@ -5,6 +5,7 @@ import           Control.Monad
 import qualified Criterion.Main                as C
 import           Data.Bifunctor                 ( Bifunctor(second) )
 import           Data.Char                      ( digitToInt )
+import           Data.Function                 as F
 import qualified Data.HashMap.Strict           as M
 import           Data.Hashable                  ( Hashable )
 import           Data.List                      ( foldl' )
@@ -62,8 +63,8 @@ defaultMain
   -> (a -> c) -- Function to solve part 2.
   -> IO ()
 defaultMain defaultFile parse part1 part2 = do
-  (opts, _)  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
-  input <- doParse parse (file opts) <$> readFile (file opts)
+  (opts, _) <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
+  input     <- doParse parse (file opts) <$> readFile (file opts)
   when (runPart1 opts) $ do
     putStr "part1: "
     print' $ part1 input
@@ -78,8 +79,8 @@ criterionMain
   -> (a -> [C.Benchmark]) -- Criterion IO () benchmarking function.
   -> IO ()
 criterionMain defaultFile parse getBench = do
-  (opts, rest)  <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
-  input <- doParse parse (file opts) <$> readFile (file opts)
+  (opts, rest) <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
+  input        <- doParse parse (file opts) <$> readFile (file opts)
   withArgs rest $ C.defaultMain $ getBench input
 
 nullOpts :: Options
@@ -131,3 +132,6 @@ fromBinary = foldl' (\acc d -> 2 * acc + digitToInt d) 0
 foldM1 :: Monad m => (a -> a -> m a) -> [a] -> m a
 foldM1 f (x : xs) = foldM f x xs
 foldM1 _ []       = undefined
+
+(&) = (F.&)
+on = F.on
