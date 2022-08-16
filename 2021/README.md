@@ -6,7 +6,7 @@ To run haskell programs:
 
 ```sh
 cd haskell
-stack run d01
+stack run -- -d 1
 ```
 
 To run rust programs:
@@ -16,12 +16,12 @@ cd rust
 cargo run --release --bin d01
 ```
 
-With haskell programs you can specify options:
+With haskell programs you can specify other options:
 ```sh
-stack run d01 -- -f ~/input.txt # Run with other input files.
-stack run d01 -- p1 # Run only part 1.
+stack run -- -d 1 -f ~/input.txt # Run day 01 with other input files.
+stack run -- -d 1 p1             # Run only part 1 of day 01.
 ```
 
 By default, both parts 1 and 2 are run.
 
-N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml.
+<!-- N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml. -->

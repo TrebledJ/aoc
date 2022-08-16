@@ -1,8 +1,8 @@
 module D22Bench where
 
-import qualified Criterion.Main as C
-import qualified Days.D22 as D22
-import Utils
+import qualified Criterion.Main                as C
+import qualified Days.D22                      as D22
+import           Utils
 
 
 main :: IO ()
