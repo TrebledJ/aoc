@@ -19,6 +19,8 @@ Run only part1:
 stack run -- -d 1 p1
 ```
 
+(By default, both parts 1 and 2 are run.)
+
 Bench part1 and part2:
 ```sh
 stack run -- -d 1 --bench
@@ -37,6 +39,10 @@ To run dedicated benchmarks:
 stack bench
 ```
 
+By default, both parts 1 and 2 are run.
+
+<!-- N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml. -->
+
 ### Rust
 To run rust programs:
 
@@ -44,9 +50,3 @@ To run rust programs:
 cd rust
 cargo run --release --bin d01
 ```
-
-
-
-By default, both parts 1 and 2 are run.
-
-<!-- N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml. -->
