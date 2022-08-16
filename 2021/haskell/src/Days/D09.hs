@@ -1,6 +1,6 @@
 -- BFS implementation.
 
-module D09 where
+module Days.D09 where
 
 import           Data.Char
 import qualified Data.HashSet                  as S

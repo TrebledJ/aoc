@@ -1,4 +1,4 @@
-module D10 where
+module Days.D10 where
 
 import           Data.List                      ( sort )
 import           Data.Maybe                     ( isNothing )

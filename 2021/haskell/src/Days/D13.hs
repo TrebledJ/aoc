@@ -1,5 +1,5 @@
 -- CAFJHZCK
-module D13 where
+module Days.D13 where
 
 import qualified Data.HashSet                  as S
 import           Text.Megaparsec

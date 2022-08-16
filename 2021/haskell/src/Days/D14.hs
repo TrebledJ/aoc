@@ -1,7 +1,7 @@
 -- Uses double counter method inspired from https://www.reddit.com/r/adventofcode/comments/rfzq6f/comment/hohc8vc/.
 -- One counter keeps track of the number of occurrences of a character.
 -- A second counter to keep track of pairs (and the number of times they occur) in the current string.
-module D14 where
+module Days.D14 where
 
 import qualified Data.HashMap.Strict           as M
 import           Data.List

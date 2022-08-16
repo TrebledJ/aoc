@@ -5,7 +5,7 @@
 -- step, for each pair ((p1, p2, s1, s2), copies), generate a list of new pairs
 -- as if simulating those universes. Combine all new pairs of ((p1', p2', s1',
 -- s2'), copies) into a new map.
-module D21 where
+module Days.D21 where
 
 import qualified Data.HashMap.Strict           as M
 import           Data.List

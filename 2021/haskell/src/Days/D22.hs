@@ -1,5 +1,5 @@
 -- See 2021/writeups/d22.md.
-module D22 where
+module Days.D22 where
 
 import qualified Criterion.Main                as C
 import           Data.Bifunctor

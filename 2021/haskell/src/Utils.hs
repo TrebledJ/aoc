@@ -23,7 +23,7 @@ data Options = Options
   , runPart1 :: Bool
   , runPart2 :: Bool
   }
-
+ 
 
 class Show a => Print a where
   print' :: a -> IO ()

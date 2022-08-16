@@ -3,7 +3,7 @@
 --  v0: initial y velocity
 --  i: the iteration/step of simulating the pod
 --  hit: whether the pod successfully landed in the target zone
-module D17 where
+module Days.D17 where
 
 
 import           Data.List

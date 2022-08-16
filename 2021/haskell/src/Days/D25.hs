@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module D25 where
+module Days.D25 where
 
 import           Control.Monad.ST
 import qualified Criterion.Main                as C

@@ -1,4 +1,4 @@
-module D16 where
+module Days.D16 where
 
 import           Numeric                        ( showIntAtBase )
 import           Text.Megaparsec         hiding ( parse )

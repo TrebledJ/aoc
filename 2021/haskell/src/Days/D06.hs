@@ -5,7 +5,7 @@
 -- Using binary exponentiation, we can compute the transform from step 1 to step
 -- N and apply it to our state in one go.
 
-module D06 where
+module Days.D06 where
 
 import           Data.List.Split
 import qualified Data.Matrix                   as M

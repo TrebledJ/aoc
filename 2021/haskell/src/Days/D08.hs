@@ -5,7 +5,7 @@
 -- checking the number of intersections with 3: 0 has four intersections, 9 has
 -- five intersections.
 
-module D08 where
+module Days.D08 where
 
 import           Data.Char
 import           Data.List

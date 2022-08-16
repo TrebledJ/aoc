@@ -1,4 +1,4 @@
-module DXX where
+module Days.DXX where
 
 import           Utils
 

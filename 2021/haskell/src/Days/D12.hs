@@ -1,4 +1,4 @@
-module D12 where
+module Days.D12 where
 
 import           Data.Char
 import qualified Data.HashMap.Strict           as M
