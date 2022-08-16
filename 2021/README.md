@@ -2,13 +2,42 @@
 
 Attempted to solve through a combination of Haskell, Rust, and maybe more.
 
+### Haskell
 To run haskell programs:
-
 ```sh
 cd haskell
 stack run -- -d 1
 ```
 
+Run with a custom input file:
+```sh
+stack run -- -d 1 -f ~/input.txt # Run day 01 with other input files.
+```
+
+Run only part1:
+```sh
+stack run -- -d 1 p1
+```
+
+Bench part1 and part2:
+```sh
+stack run -- -d 1 --bench
+```
+
+If no day (`-d`) is specified, the program will run the first day by default.
+
+To run test suites:
+```sh
+stack test
+stack test --test-arguments "-m D22"  # Individual test suite.
+```
+
+To run dedicated benchmarks:
+```sh
+stack bench
+```
+
+### Rust
 To run rust programs:
 
 ```sh
@@ -16,11 +45,7 @@ cd rust
 cargo run --release --bin d01
 ```
 
-With haskell programs you can specify other options:
-```sh
-stack run -- -d 1 -f ~/input.txt # Run day 01 with other input files.
-stack run -- -d 1 p1             # Run only part 1 of day 01.
-```
+
 
 By default, both parts 1 and 2 are run.
 

@@ -5,12 +5,6 @@ import           Data.List.Split
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d04.txt"
-
 -- A bingo grid, vectorised.
 type Grid = [Int]
 

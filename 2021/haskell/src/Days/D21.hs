@@ -12,12 +12,6 @@ import           Data.List
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d21.txt"
-
 parse :: String -> (Int, Int)
 parse = (\[a, b] -> (a, b)) . map (read . last . words) . lines
 

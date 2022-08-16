@@ -5,12 +5,6 @@ import           Data.List.Split
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d07.txt"
-
 parse :: String -> [Int]
 parse s = map read $ splitOn "," s
 

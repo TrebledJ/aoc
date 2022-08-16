@@ -14,6 +14,7 @@ import           Debug.Trace                   as T
 import           System.Environment
 import           Text.Megaparsec
 import           Text.Megaparsec.Char
+import           Text.Printf                    ( printf )
 
 
 type Parser = Parsec Void String
@@ -22,8 +23,9 @@ data Options = Options
   { file     :: String
   , runPart1 :: Bool
   , runPart2 :: Bool
+  , bench    :: Bool
   }
- 
+
 
 class Show a => Print a where
   print' :: a -> IO ()
@@ -55,6 +57,12 @@ instance ParseLike Parser where
     Left  err -> T.trace (errorBundlePretty err) undefined
 
 
+inputFolder :: String
+inputFolder = "../input/d%02d.txt"
+
+getDefaultFile :: Int -> String
+getDefaultFile = printf inputFolder
+
 defaultMain
   :: (ParseLike p, Print b, Print c)
   => String   -- Default input file, if no -f option was provided from args.
@@ -63,14 +71,19 @@ defaultMain
   -> (a -> c) -- Function to solve part 2.
   -> IO ()
 defaultMain defaultFile parse part1 part2 = do
-  (opts, _) <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
-  input     <- doParse parse (file opts) <$> readFile (file opts)
+  (opts, rest) <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
+  input        <- doParse parse (file opts) <$> readFile (file opts)
   when (runPart1 opts) $ do
     putStr "part1: "
     print' $ part1 input
   when (runPart2 opts) $ do
     putStr "part2: "
     print' $ part2 input
+  when (bench opts) $ do
+    withArgs rest $ C.defaultMain
+      [ C.bgroup "part1" [C.bench "part1" $ C.whnf part1 input]
+      , C.bgroup "part2" [C.bench "part2" $ C.whnf part2 input]
+      ]
 
 criterionMain
   :: (ParseLike p)
@@ -84,16 +97,19 @@ criterionMain defaultFile parse getBench = do
   withArgs rest $ C.defaultMain $ getBench input
 
 nullOpts :: Options
-nullOpts = Options { file = "", runPart1 = False, runPart2 = False }
+nullOpts =
+  Options { file = "", runPart1 = False, runPart2 = False, bench = False }
 
 parseArgs :: Options -> [String] -> (Options, [String])
-parseArgs o [] = if not (runPart1 o) && not (runPart2 o)
+parseArgs o [] = if not (runPart1 o) && not (runPart2 o) && not (bench o)
   then (o { runPart1 = True, runPart2 = True }, [])
   else (o, [])
-parseArgs o ("-f" : f : rest) = parseArgs (o { file = f }) rest
-parseArgs o ("p1"     : rest) = parseArgs (o { runPart1 = True }) rest
-parseArgs o ("p2"     : rest) = parseArgs (o { runPart2 = True }) rest
-parseArgs o (arg      : rest) = second (arg :) $ parseArgs o rest
+parseArgs o ("-f" : f  : rest) = parseArgs (o { file = f }) rest
+parseArgs o ("p1"      : rest) = parseArgs (o { runPart1 = True }) rest
+parseArgs o ("p2"      : rest) = parseArgs (o { runPart2 = True }) rest
+parseArgs o ("--bench" : rest) = parseArgs (o { bench = True }) rest
+parseArgs o ("-b"      : rest) = parseArgs (o { bench = True }) rest
+parseArgs o (arg       : rest) = second (arg :) $ parseArgs o rest
 
 digits :: (Num i, Read i) => Parser i
 digits = read <$> some digitChar

@@ -14,12 +14,6 @@ import qualified Data.Map                      as M
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d08.txt"
-
 parse :: String -> ([[String]], [[String]])
 parse s = (map words notes, map words output)
  where

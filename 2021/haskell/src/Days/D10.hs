@@ -5,12 +5,6 @@ import           Data.Maybe                     ( isNothing )
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d10.txt"
-
 parse :: String -> [String]
 parse = lines
 

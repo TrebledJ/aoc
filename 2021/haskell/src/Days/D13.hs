@@ -7,18 +7,12 @@ import           Text.Megaparsec.Char
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parser part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d13.txt"
-
 type Coor = (Int, Int)
 data Axis = X | Y deriving (Read, Show, Eq)
 type Fold = (Axis, Int)
 
-parser :: Parser ([Coor], [Fold])
-parser =
+parse :: Parser ([Coor], [Fold])
+parse =
   (,) <$> some (coor <* newline) <* newline <*> folds `sepBy1` newline <* eof
  where
   coor = (,) <$> digits <* char ',' <*> digits

@@ -15,14 +15,6 @@ type Cell = Char
 type IGrid = UArray (Int, Int) Cell
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
--- main = criterionMain defaultFile parse
---   $ \input -> [C.bench "part1" $ C.whnf part1 input]
-
-defaultFile :: String
-defaultFile = "../input/d25.txt"
-
 parse :: String -> (IGrid, Int, Int, V.Vector (Int, Int), V.Vector (Int, Int))
 parse inp = (g, w, h, rs, ds)
  where

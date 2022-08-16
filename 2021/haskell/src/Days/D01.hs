@@ -3,12 +3,6 @@ module Days.D01 where
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d01.txt"
-
 parse :: String -> [Int]
 parse = map read . lines
 

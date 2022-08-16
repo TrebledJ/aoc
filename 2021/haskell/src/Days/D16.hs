@@ -11,20 +11,14 @@ data Packet = Packet Int Int PacketObj deriving Show
 data PacketObj = Literal Int | Operands [Packet] deriving Show
 
 
-main :: IO ()
-main = defaultMain defaultFile topLevelParse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d16.txt"
-
-topLevelParse :: String -> Packet
-topLevelParse = parse packet . transform
+parse :: String -> Packet
+parse = subparse packet . transform
  where
   transform = concatMap (\h -> toBinary $ read $ "0x" ++ [h])
   toBinary n = printf "%04s" (showIntAtBase 2 ("01" !!) n "") -- A LUT is probably better.
 
-parse :: Parser a -> String -> a
-parse p s = case runParser (p <* many (char '0')) "" s of
+subparse :: Parser a -> String -> a
+subparse p s = case runParser (p <* many (char '0')) "" s of
   Right res -> res
   Left  err -> trace (errorBundlePretty err) undefined
 
@@ -48,7 +42,7 @@ packet = do
 operands :: Int -> Parser [Packet]
 operands 0 = do
   len      <- fromBinary <$> bits 15
-  parse (some packet) <$> bits len
+  subparse (some packet) <$> bits len
 operands _ = do
   num      <- fromBinary <$> bits 11
   count num packet

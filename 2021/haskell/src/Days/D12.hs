@@ -23,12 +23,6 @@ data Path = Path
   deriving Show
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d12.txt"
-
 parse :: String -> Graph
 parse text =
   finalise $ foldr (addEdge . splitOn "-") (Graph [] M.empty) $ lines text

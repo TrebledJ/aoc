@@ -10,14 +10,8 @@ import           Text.Megaparsec.Char
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parser part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d14.txt"
-
-parser :: Parser (String, M.HashMap String Char)
-parser =
+parse :: Parser (String, M.HashMap String Char)
+parse =
   (,)
     <$> some letterChar
     <*  space

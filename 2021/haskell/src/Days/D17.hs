@@ -11,14 +11,8 @@ import           Text.Megaparsec.Char
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parser part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d17.txt"
-
-parser :: Parser (Int, Int, Int, Int)
-parser =
+parse :: Parser (Int, Int, Int, Int)
+parse =
   (,,,)
     <$  string "target area: x="
     <*> integer

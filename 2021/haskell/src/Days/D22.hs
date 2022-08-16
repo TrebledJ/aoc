@@ -19,14 +19,9 @@ type TagUnion2 = CuboidTag -- Union of tags with efficient representation: (x..n
 type AlternatingUnions = [TagUnion] -- Alternating sum of unions: + on even indices, - on odd indices.
 type AlternatingUnions' = [TagUnion2] -- Alternating sum of unions: + on even indices, - on odd indices.
 
-main :: IO ()
-main = defaultMain defaultFile parser part1 part2''
 
-defaultFile :: String
-defaultFile = "../input/d22.txt"
-
-parser :: Parser [Command]
-parser = flip sepBy1 newline $ do
+parse :: Parser [Command]
+parse = flip sepBy1 newline $ do
   cmd <- some letterChar
   string " x="
   x1 <- integer
@@ -46,16 +41,18 @@ part1 :: [Command] -> Int
 part1 cmds = evalUnions lu (cuboidWithRadius 50) set
   where (lu, set) = mkExpr cmds
 
-part2 :: [Command] -> Int
-part2 cmds = evalUnions lu (cuboidWithRadius 200000) set
+part2 = part2u''
+
+part2u :: [Command] -> Int
+part2u cmds = evalUnions lu (cuboidWithRadius 200000) set
   where (lu, set) = mkExpr cmds
 
-part2' :: [Command] -> Int
-part2' cmds = evalUnions' lu (cuboidWithRadius 200000) set
+part2u' :: [Command] -> Int
+part2u' cmds = evalUnions' lu (cuboidWithRadius 200000) set
   where (lu, set) = mkExpr2 cmds
 
-part2'' :: [Command] -> Int
-part2'' cmds = evalUnions'' lu set where (lu, set) = cmds & mkExpr2
+part2u'' :: [Command] -> Int
+part2u'' cmds = evalUnions'' lu set where (lu, set) = cmds & mkExpr2
 
 cuboidWithRadius :: Int -> Cuboid
 cuboidWithRadius r = ((-r, r), (-r, r), (-r, r))

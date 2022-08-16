@@ -8,12 +8,6 @@ import           Data.List
 import           Utils
 
 
-main :: IO ()
-main = defaultMain defaultFile parse part1 part2
-
-defaultFile :: String
-defaultFile = "../input/d09.txt"
-
 type Cell = Char
 type Grid = [[Cell]]
 type Coor = (Int, Int)

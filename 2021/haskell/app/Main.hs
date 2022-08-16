@@ -31,7 +31,6 @@ import           System.Environment
 import           Utils
 
 
-
 main :: IO ()
 main = do
   (days, rest) <- parseDayArgs [] <$> getArgs
@@ -39,41 +38,45 @@ main = do
     if day < 1 || day > 25
       then putStrLn "Day should be between 1 and 25 inclusive."
       else case mains !! (day - 1) of
-        Nothing -> putStrLn $ "Day " ++$ day ++ " hasn't been implemented yet."
-        Just io -> withArgs rest io
+        Nothing -> putStrLn $ "Day" ++$ day ++ " hasn't been implemented yet."
+        Just dayMain -> do
+          putStrLn $ "Running day" ++$ day ++ ":"
+          withArgs rest $ dayMain day
     return ()
 
 parseDayArgs :: [Int] -> [String] -> ([Int], [String])
 parseDayArgs days []                  = (if null days then [1] else days, [])
 parseDayArgs days ("-d" : day : rest) = parseDayArgs (read day : days) rest
+parseDayArgs days ("-day" : day : rest) = parseDayArgs (read day : days) rest
 parseDayArgs days (arg        : rest) = second (arg :) $ parseDayArgs days rest
 
-mains :: [Maybe (IO ())]
+mains :: [Maybe (Int -> IO ())]
 mains =
-  [ Just D01.main
+  [ Just $ fromImpl (D01.parse, D01.part1, D01.part2)
   , Nothing
   , Nothing
-  , Just D04.main
+  , Just $ fromImpl (D04.parse, D04.part1, D04.part2)
   , Nothing
-  , Just D06.main
-  , Just D07.main
-  , Just D08.main
-  , Just D09.main
-  , Just D10.main
+  , Just $ fromImpl (D06.parse, D06.part1, D06.part2)
+  , Just $ fromImpl (D07.parse, D07.part1, D07.part2)
+  , Just $ fromImpl (D08.parse, D08.part1, D08.part2)
+  , Just $ fromImpl (D09.parse, D09.part1, D09.part2)
+  , Just $ fromImpl (D10.parse, D10.part1, D10.part2)
   , Nothing
-  , Just D12.main
-  , Just D13.main
-  , Just D14.main
+  , Just $ fromImpl (D12.parse, D12.part1, D12.part2)
+  , Just $ fromImpl (D13.parse, D13.part1, D13.part2)
+  , Just $ fromImpl (D14.parse, D14.part1, D14.part2)
   , Nothing
-  , Just D16.main
-  , Just D17.main
-  , Nothing
-  , Nothing
-  , Nothing
-  , Just D21.main
-  , Just D22.main
+  , Just $ fromImpl (D16.parse, D16.part1, D16.part2)
+  , Just $ fromImpl (D17.parse, D17.part1, D17.part2)
   , Nothing
   , Nothing
-  , Just D25.main
+  , Nothing
+  , Just $ fromImpl (D21.parse, D21.part1, D21.part2)
+  , Just $ fromImpl (D22.parse, D22.part1, D22.part2)
+  , Nothing
+  , Nothing
+  , Just $ fromImpl (D25.parse, D25.part1, D25.part2)
   ]
+  where fromImpl (parse, part1, part2) day = defaultMain (getDefaultFile day) parse part1 part2
 

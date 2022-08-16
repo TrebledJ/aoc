@@ -14,8 +14,8 @@ spec = do
     part1 input `shouldBe` p1Answer
 
   describe "part2" $ do
-    it "part2" $ do part2 input `shouldBe` p2Answer
-    it "part2 (opt)" $ do part2' input `shouldBe` p2Answer
-    it "part2 (opt2)" $ do part2'' input `shouldBe` p2Answer
+    it "part2" $ do part2u input `shouldBe` p2Answer
+    it "part2 (opt)" $ do part2u' input `shouldBe` p2Answer
+    it "part2 (opt2)" $ do part2u'' input `shouldBe` p2Answer
     it "part2 (intersect)" $ do part2i input `shouldBe` p2Answer
       
