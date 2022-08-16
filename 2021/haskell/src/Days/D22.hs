@@ -21,17 +21,17 @@ type AlternatingUnions = [TagUnion] -- Alternating sum of unions: + on even indi
 type AlternatingUnions' = [TagUnion2] -- Alternating sum of unions: + on even indices, - on odd indices.
 
 main :: IO ()
--- main = defaultMain defaultFile parser part1 part2''
-main = criterionMain defaultFile parser $ \input ->
-  [ C.bgroup "part1" [C.bench "part1" $ C.whnf part1 input]
-  , C.bgroup
-    "part2"
-    [ C.bench "sum of unions" $ C.whnf part2 input
-    , C.bench "sum of unions (optimised)" $ C.whnf part2' input
-    , C.bench "sum of unions (optimised 2)" $ C.whnf part2'' input
-    , C.bench "sum of intersections" $ C.whnf part2i input
-    ]
-  ]
+main = defaultMain defaultFile parser part1 part2''
+-- main = criterionMain defaultFile parser $ \input ->
+--   [ C.bgroup "part1" [C.bench "part1" $ C.whnf part1 input]
+--   , C.bgroup
+--     "part2"
+--     [ C.bench "sum of unions" $ C.whnf part2 input
+--     , C.bench "sum of unions (optimised)" $ C.whnf part2' input
+--     , C.bench "sum of unions (optimised 2)" $ C.whnf part2'' input
+--     , C.bench "sum of intersections" $ C.whnf part2i input
+--     ]
+--   ]
 
 defaultFile :: String
 defaultFile = "../input/d22.txt"

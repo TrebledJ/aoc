@@ -131,6 +131,16 @@ executables:
   #   - haskell
   #   - array
 
+benchmarks:
+  d22-bench:
+    main: D22Bench.main
+    source-dirs: bench
+    dependencies:
+    - base
+    - haskell
+    - criterion
+    ghc-options:    *exe-ghc-options
+
 tests:
   d22-test:
     main:           Spec.hs
