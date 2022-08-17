@@ -37,9 +37,10 @@ stack test --test-arguments "-m D22"  # Individual test suite.
 To run dedicated benchmarks:
 ```sh
 stack bench
+stack bench --ba part2 # Run only part2 benchmarks.
 ```
 
-By default, both parts 1 and 2 are run.
+On windows, you may need to run `chcp.com 65001` so that stuff gets printed properly.
 
 <!-- N.B. Haskell Stack will [compile all executables in one go](https://github.com/commercialhaskell/stack/issues/1406), so it may be a bit slow. To speed up compilation, comment the unneeded executables in package.yaml. -->
 
