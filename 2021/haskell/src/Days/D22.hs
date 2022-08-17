@@ -5,7 +5,7 @@ import           Data.Bifunctor
 import           Data.List
 import           Data.Maybe
 import qualified Data.Vector                   as V
-import           Text.Megaparsec
+import           Text.Megaparsec         hiding ( parse )
 import           Text.Megaparsec.Char
 import           Utils                   hiding ( on )
 
@@ -52,7 +52,7 @@ part2u' cmds = evalUnions' lu (cuboidWithRadius 200000) set
   where (lu, set) = mkExpr2 cmds
 
 part2u'' :: [Command] -> Int
-part2u'' cmds = evalUnions'' lu set where (lu, set) = cmds & mkExpr2
+part2u'' cmds = evalUnions'' lu set where (lu, set) = mkExpr2 cmds
 
 cuboidWithRadius :: Int -> Cuboid
 cuboidWithRadius r = ((-r, r), (-r, r), (-r, r))
