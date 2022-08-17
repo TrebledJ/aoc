@@ -94,7 +94,7 @@ criterionMain
 criterionMain defaultFile parse getBench = do
   (opts, rest) <- parseArgs (nullOpts { file = defaultFile }) <$> getArgs
   input        <- doParse parse (file opts) <$> readFile (file opts)
-  withArgs rest $ C.defaultMain $ getBench input
+  withArgs rest $ C.defaultMain $ getBench $! input
 
 nullOpts :: Options
 nullOpts =
