@@ -24,12 +24,13 @@ data Path = Path
 
 
 parse :: String -> Graph
-parse text =
-  finalise $ foldr (addEdge . splitOn "-") (Graph [] M.empty) $ lines text
+parse = lines .> foldr (splitOn "-" .> addEdge) (Graph [] M.empty) 
+              .> finalise
  where
   addEdge [from, to] (Graph ns adjM) = Graph
     { nodes = from : to : ns
-    , adjs  = M.insertWith (++) from [to] $ M.insertWith (++) to [from] adjM
+    , adjs  = adjM |> M.insertWith (++) to [from] 
+                   |> M.insertWith (++) from [to]
     }
   addEdge _ _ = undefined
   finalise (Graph ns es) = Graph { nodes = nub ns, adjs = es }
@@ -65,12 +66,12 @@ spelunk (Graph _ adjM) cond s t = bfs
    where
     bfsImpl path@Path { visited = v, prev = cur, twice = tw }
       | cur == t  = ([], True)
-      | otherwise = (map addNodeToPath newNs, False)
+      | otherwise = (newNs |> map addNodeToPath, False)
      where
-      addNodeToPath n = Path { visited = S.insert n v
+      addNodeToPath n = Path { visited = v |> S.insert n
                              , prev    = n
                              , twice   = tw || (isSmall n && n `elem` v)
                              }
       newNs = filter (cond path) (adjM M.! cur)
-    (newqs, finished) = unzip $ map bfsImpl q
+    (newqs, finished) = q |> map bfsImpl |> unzip
 

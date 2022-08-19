@@ -41,7 +41,7 @@ parse =
 -- Finally, we perform a linear search for the highest v0 hitting the target and
 -- apply Gauss' arithmetic formula to determine the max y-position.
 part1 :: (Int, Int, Int, Int) -> Int
-part1 (_, _, ymin, ymax) = gauss $ head $ initialV0 ymin ymax
+part1 (_, _, ymin, ymax) = initialV0 ymin ymax |> head |> gauss
   where gauss n = n * (n + 1) `div` 2
 
 -- For each known v0, list the i that land in the target zone (i.e. ymin <= y_i
@@ -49,7 +49,7 @@ part1 (_, _, ymin, ymax) = gauss $ head $ initialV0 ymin ymax
 -- associated with v0. You know the rest.
 part2 :: (Int, Int, Int, Int) -> Int
 part2 (xmin, xmax, ymin, ymax) = sum
-  [ length $ initialU0 $ fromIntegral v0
+  [ v0 |> fromIntegral |> initialU0 |> length
   | v0 <- initialV0 ymin ymax
   ]
  where
@@ -57,15 +57,15 @@ part2 (xmin, xmax, ymin, ymax) = sum
     [ u0
     | i  <- [ceiling (inverseStep v0 ymax) .. floor (inverseStep v0 ymin)]
     , u0 <- [xmax, xmax - 1 .. min_u0 - 1]
-    , let x = floor $ x_i (fromIntegral u0) (fromIntegral i)
+    , let x = x_i (fromIntegral u0) (fromIntegral i) |> floor
     , xmin <= x && x <= xmax
     ]
   x_i :: Float -> Float -> Float
   x_i u0 i = let ii = min i u0 in -0.5 * ii * ii + (u0 + 0.5) * ii
-  min_u0 = ceiling $ -0.5 + sqrt (0.25 + 2 * fromIntegral xmin)
+  min_u0 = -0.5 + sqrt (0.25 + 2 * fromIntegral xmin) |> ceiling
 
 initialV0 :: Int -> Int -> [Int]
-initialV0 ymin ymax = filter (hits . fromIntegral)
+initialV0 ymin ymax = filter (fromIntegral .> hits)
                                       [5 * yr, 5 * yr - 1 .. ymin] -- This range is kinda arbitrary.
  where
   hits v0 = ceiling (inverseStep v0 ymax) <= floor (inverseStep v0 ymin) -- Whether v0 will hit the target.
@@ -81,17 +81,7 @@ simulate (xmin, xmax, ymin, ymax) = simulate' 0 0 0
  where
   simulate' i x y u v
     | trace
-      (  "iter: "
-      ++ show i
-      ++ ";\tpos: "
-      ++ show x
-      ++ ","
-      ++ show y
-      ++ ";\tvel: "
-      ++ show u
-      ++ ","
-      ++ show v
-      )
+      ("iter: " ++$ i ++ ";\tpos: " ++$ x ++ "," ++$ y ++ ";\tvel: " ++$ u ++ "," ++$ v)
       False
     = undefined
   simulate' i x y u v

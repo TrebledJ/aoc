@@ -13,7 +13,7 @@ import           Utils
 
 
 parse :: String -> [Int]
-parse s = map read $ splitOn "," s
+parse = splitOn "," .> map read
 
 transform :: M.Matrix Int
 transform = M.fromLists
@@ -41,7 +41,7 @@ countLanternfish :: [Int] -> [Int]
 countLanternfish xs = [ count (== i) xs | i <- [0 .. 8] ]
 
 simulate :: Int -> [Int] -> Int
-simulate days input = sum $ M.toList $ expTransform days `M.multStd` initCount
+simulate days input = expTransform days `M.multStd` initCount |> M.toList |> sum
   where initCount = M.fromList 9 1 (countLanternfish input)
 
 part1 :: [Int] -> Int

@@ -118,13 +118,13 @@ integer :: (Num i, Read i) => Parser i
 integer = (negate <$> try (char '-' *> digits)) <|> digits
 
 count :: (a -> Bool) -> [a] -> Int
-count p = length . filter p
+count p = filter p .> length
 
 firstBy :: (a -> Bool) -> [a] -> a
-firstBy p = head . filter p
+firstBy p = filter p .> head
 
 lastBy :: (a -> Bool) -> [a] -> a
-lastBy p = last . filter p
+lastBy p = filter p .> last
 
 trace :: String -> a -> a
 trace = T.trace
@@ -149,5 +149,10 @@ foldM1 :: Monad m => (a -> a -> m a) -> [a] -> m a
 foldM1 f (x : xs) = foldM f x xs
 foldM1 _ []       = undefined
 
-(&) = (F.&)
+
+infixl 1 |>
+infixl 9 .>
+
+(|>) = (F.&)
+(.>) = flip (.)
 on = F.on

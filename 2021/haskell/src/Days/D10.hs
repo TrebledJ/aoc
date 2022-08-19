@@ -9,11 +9,12 @@ parse :: String -> [String]
 parse = lines
 
 part1 :: [String] -> Int
-part1 = sum . map (score . checkCorrupted)
+part1 = map (checkCorrupted .> score) .> sum
 
 part2 :: [String] -> Int
-part2 = median . map (tally . map score2 . closeOff) . filter
-  (isNothing . checkCorrupted)
+part2 = filter (checkCorrupted .> isNothing) 
+          .> map (closeOff .> map score2 .> tally) 
+          .> median
  where
   median xs = sort xs !! (length xs `div` 2) -- Assume odd # of elements.
   tally = foldl (\acc x -> 5 * acc + x) 0
@@ -35,7 +36,7 @@ score (Just '>') = 25137
 score _          = 0
 
 closeOff :: String -> String
-closeOff xs' = map invert $ close xs' []
+closeOff xs' = close xs' [] |> map invert
  where
   close [] st = st
   close (x : xs) st

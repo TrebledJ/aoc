@@ -18,12 +18,18 @@ type IGrid = UArray (Int, Int) Cell
 parse :: String -> (IGrid, Int, Int, V.Vector (Int, Int), V.Vector (Int, Int))
 parse inp = (g, w, h, rs, ds)
  where
-  ls = lines inp
-  h  = length ls
-  w  = length $ head ls
-  g  = listArray ((0, 0), (h - 1, w - 1)) (concat ls)
-  rs = V.fromList $ map fst $ filter ((== '>') . snd) $ assocs g
-  ds = V.fromList $ map fst $ filter ((== 'v') . snd) $ assocs g
+  ls = inp |> lines
+  h  = ls |> length
+  w  = ls |> head |> length
+  g  = ls |> concat |> listArray ((0, 0), (h - 1, w - 1))
+  rs = g |> assocs 
+         |> filter (snd .> (== '>')) 
+         |> map fst 
+         |> V.fromList
+  ds = g |> assocs 
+         |> filter (snd .> (== 'v')) 
+         |> map fst 
+         |> V.fromList
 
 
 debugM :: Monad m => String -> m ()

@@ -16,24 +16,28 @@ parse :: String -> Grid
 parse = lines
 
 part1 :: Grid -> Int
-part1 g = riskLevel $ map (gridAt g) $ filter
-  isLowPoint
-  [ (i, j) | i <- [0 .. w - 1], j <- [0 .. h - 1] ]
+part1 g = [ (i, j) | i <- [0 .. w - 1], j <- [0 .. h - 1] ] 
+            |> filter isLowPoint 
+            |> map (gridAt g)
+            |> riskLevel
  where
-  isLowPoint pos = all (gridAt g pos <) $ gridAdjs g pos
-  (w, h) = getWH g
+  isLowPoint pos = pos |> gridAdjs g |> all (gridAt g pos <)
+  (w, h) = g |> getWH
 
 part2 :: Grid -> Int
-part2 g = product $ take 3 $ reverse $ sort $ map length $ basins
-  []
-  [ (i, j) | i <- [0 .. w - 1], j <- [0 .. h - 1] ]
+part2 g = basins [] [ (i, j) | i <- [0 .. w - 1], j <- [0 .. h - 1] ] 
+            |> map length 
+            |> sort 
+            |> reverse 
+            |> take 3 
+            |> product
  where
   basins v []        = v
   basins v (cur : q) = if (cur `elem`) `any` v
     then basins v q
     else basins (bfs g cur basinAdjs : v) q
   basinAdjs pos | gridAt g pos == '9' = []
-                | otherwise = filter ((< '9') . gridAt g) $ adjsG g pos
+                | otherwise = pos |> adjsG g |> filter (gridAt g .> (< '9'))
   (w, h) = getWH g
 
 adjs :: Coor -> (Int, Int) -> [Coor]
@@ -54,7 +58,7 @@ gridAt :: Grid -> Coor -> Cell
 gridAt g (x, y) = (g !! y) !! x
 
 riskLevel :: [Char] -> Int
-riskLevel = sum . map ((+ 1) . digitToInt)
+riskLevel = map (digitToInt .> (+ 1)) .> sum
 
 -- Returns all coordinates connected to given coordinate.
 bfs
@@ -74,4 +78,4 @@ bfsImpl _ v []        _ = v
 bfsImpl g v (cur : q) f = if cur `elem` v
   then bfsImpl g v q f
   else bfsImpl g (cur `S.insert` v) (q ++ new) f
-  where new = filter (`notElem` v) $ f cur
+  where new = f cur |> filter (`notElem` v)

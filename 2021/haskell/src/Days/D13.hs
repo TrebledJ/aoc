@@ -22,17 +22,17 @@ parse =
   axis _   = Y
 
 part1 :: ([Coor], [Fold]) -> Int
-part1 (cs, f : _) = length $ foldPaper (S.fromList cs) f
+part1 (cs, f : _) = foldPaper (S.fromList cs) f |> length
 part1 (_ , _    ) = undefined
 
 part2 :: ([Coor], [Fold]) -> String
 part2 (cs, fs) = '\n' : grid
  where
-  dots = foldl foldPaper (S.fromList cs) fs
-  grid = unlines $ makeGrid dots
+  dots = fs |> foldl foldPaper (S.fromList cs)
+  grid = makeGrid dots |> unlines
 
 foldPaper :: S.HashSet Coor -> Fold -> S.HashSet Coor
-foldPaper cs (ax, v) = S.map mapCoor cs
+foldPaper cs (ax, v) = cs |> S.map mapCoor
  where
   mapCoor (x, y)
     | ax == X   = if x >= v then (x - 2 * abs (x - v), y) else (x, y)
@@ -44,7 +44,7 @@ makeGrid cs =
   | j <- [h1 .. h2]
   ]
  where
-  w1 = minimum $ S.map fst cs
-  w2 = maximum $ S.map fst cs
-  h1 = minimum $ S.map snd cs
-  h2 = maximum $ S.map snd cs
+  w1 = cs |> S.map fst |> minimum
+  w2 = cs |> S.map fst |> maximum
+  h1 = cs |> S.map snd |> minimum
+  h2 = cs |> S.map snd |> maximum

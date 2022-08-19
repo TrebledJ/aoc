@@ -28,9 +28,9 @@ part2 = solve 40
 solve :: Int -> (String, M.HashMap String Char) -> Int
 solve n (start, rs) = most - least
  where
-  start'   = M.fromList $ zipWith (\a b -> ([a, b], 1)) start (tail start)
+  start'   = start |> zipWith (\a b -> ([a, b], 1)) (tail start) |> M.fromList
   (ctr, _) = iterate (uncurry (step rs)) (counter start, start') !! n
-  sorted   = sort $ M.elems ctr
+  sorted   = ctr |> M.elems |> sort
   most     = last sorted
   least    = head sorted
 
@@ -45,7 +45,7 @@ step rs ctr occur = M.foldlWithKey' update (ctr, occur) occur
     then (M.insertWith (+) (rs M.! pr) times ctr', newOccur)
     else (ctr', occur')
    where
-    newOccur0 = M.adjust (\x -> x - times) pr occur' -- Decrement existing pair.
-    newOccur1 = M.insertWith (+) [a, rs M.! pr] times newOccur0 -- Increment new pairs.
-    newOccur  = M.insertWith (+) [rs M.! pr, b] times newOccur1 -- Increment new pairs.
+    newOccur = occur' |> M.adjust (\x -> x - times) pr -- Decrement existing pair.
+                      |> M.insertWith (+) [a, rs M.! pr] times  -- Increment new pairs.
+                      |> M.insertWith (+) [rs M.! pr, b] times -- Increment new pairs.
   update _ _ _ = undefined

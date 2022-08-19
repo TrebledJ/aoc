@@ -17,17 +17,19 @@ import           Utils
 parse :: String -> ([[String]], [[String]])
 parse s = (map words notes, map words output)
  where
-  (notes, output) = unzip $ map ((\[x, y] -> (x, y)) . splitOn " | ") $ lines s
+  (notes, output) = s |> lines 
+                      |> map (splitOn " | " .> (\[x, y] -> (x, y))) 
+                      |> unzip
 
 part1 :: ([[String]], [[String]]) -> Int
-part1 (_, out) = count (\x -> length x `elem` [2, 3, 4, 7]) $ concat out
+part1 (_, out) = out |> concat |> count (length .> (`elem` [2, 3, 4, 7]))
 
 part2 :: ([[String]], [[String]]) -> Int
-part2 xs = sum $ map decode entries where entries = uncurry zip xs
+part2 = uncurry zip .> map decode .> sum
 
 decode :: ([String], [String]) -> Int
-decode (notes, out) = read $ map (intToDigit . (res M.!) . sort) out
-  where res = M.mapKeys sort $ sherlock notes
+decode (notes, out) = out |> map (sort .> (res M.!) .> intToDigit) |> read
+  where res = sherlock notes |> M.mapKeys sort
 
 sherlock :: [String] -> M.Map String Int
 sherlock notes = m2
@@ -49,7 +51,7 @@ sherlock notes = m2
   m2       = M.fromList $ M.toList m1 ++ [(d3, 3), (d0, 0), (d9, 9)]
 
 invMap :: (Ord k, Ord v) => M.Map k v -> M.Map v k
-invMap = M.fromList . map (\(x, y) -> (y, x)) . M.toList
+invMap = M.toList .> map (\(x, y) -> (y, x)) .> M.fromList
 
 simpleSherlock :: [String] -> M.Map String Int
 simpleSherlock = foldr

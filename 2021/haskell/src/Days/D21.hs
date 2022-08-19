@@ -13,7 +13,7 @@ import           Utils
 
 
 parse :: String -> (Int, Int)
-parse = (\[a, b] -> (a, b)) . map (read . last . words) . lines
+parse = lines .> map (words .> last .> read) .> (\[a, b] -> (a, b))
 
 part1 :: (Int, Int) -> Int
 part1 start = sim start (0, 0) 0 1
@@ -24,8 +24,7 @@ part1 start = sim start (0, 0) 0 1
     | otherwise = if t == 1
       then sim (move p1 step, p2) (s1 + move p1 step, s2) d' 2
       else sim (p1, move p2 step) (s1, s2 + move p2 step) d' 1
-   where
-    (step, d') = roll 3 d
+    where (step, d') = roll 3 d
   roll n d = (sum [ (d + i) `mod` 100 | i <- [1 .. n] ], d + n)
 
 part2 :: (Int, Int) -> Int
@@ -40,18 +39,16 @@ part2 (p1, p2) = step initState True (0, 0)
   go t (state, w1, w2) k cop = (state', w1 + sumCopies w1', w2 + sumCopies w2')
    where
     (active, done) =
-      partition (\((_, _, s1, s2), _) -> s1 < 21 && s2 < 21) (qexplode t k cop)
-    state'     = M.unionWith (+) state $ M.fromList active
-    (w1', w2') = partition (\((_, _, s1, _), _) -> s1 >= 21) done
-    sumCopies  = sum . map snd
+      qexplode t k cop |> partition (\((_, _, s1, s2), _) -> s1 < 21 && s2 < 21)
+    state'     = active |> M.fromList |> M.unionWith (+) state
+    (w1', w2') = done |> partition (\((_, _, s1, _), _) -> s1 >= 21)
+    sumCopies  = map snd .> sum
 
   -- List successors of a pair. To simulate the dirac die, we multiple prev copies with new copies (c * copies).
   qexplode t (p1_, p2_, s1, s2) c =
     [ ((p1', p2', s1', s2'), c * copies)
     | (sum_, copies) <- sumToCopies
-    , let (p1', p2') = if t
-            then (move p1_ sum_, p2_)
-            else (p1_, move p2_ sum_)
+    , let (p1', p2') = if t then (move p1_ sum_, p2_) else (p1_, move p2_ sum_)
     , let (s1', s2') = if t then (s1 + p1', s2) else (s1, s2 + p2')
     ]
 

@@ -22,8 +22,9 @@ gridScore hist g = sum [ x | x <- g, x `notElem` hist ] * last hist
 parse :: String -> ([Int], [Grid])
 parse s =
     let (xs : _ : rest) = lines s
-        grids = map (map read . concatMap words) $ splitOn [""] rest
-    in  (map read $ splitOn "," xs, grids)
+        grids = rest |> splitOn [""] 
+                     |> map (concatMap words .> map read)
+    in  (xs |> splitOn "," |> map read, grids)
 
 -- Iterates over the numbers, returns a list of pairs: (iter i, grids that completed on iter i).
 iter :: [Int] -> [Grid] -> [(Int, [Grid])]
@@ -35,8 +36,8 @@ iter ns gs = iter' ns gs 1
 
 part1 :: ([Int], [Grid]) -> Int
 part1 (ns, gs) = gridScore (take i ns) (head firstWinGroup)
-    where (i, firstWinGroup) = firstBy (not . null . snd) $ iter ns gs
+    where (i, firstWinGroup) = iter ns gs |> firstBy (snd .> null .> not)
 
 part2 :: ([Int], [Grid]) -> Int
 part2 (ns, gs) = gridScore (take i ns) (head firstWinGroup)
-    where (i, firstWinGroup) = lastBy (not . null . snd) $ iter ns gs
+    where (i, firstWinGroup) = iter ns gs |> lastBy (snd .> null .> not)

@@ -52,26 +52,26 @@ part2u' cmds = evalUnions' lu (cuboidWithRadius 200000) set
   where (lu, set) = mkExpr2 cmds
 
 part2u'' :: [Command] -> Int
-part2u'' cmds = evalUnions'' lu set where (lu, set) = mkExpr2 cmds
+part2u'' cmds = evalUnions'' lu set
+  where (lu, set) = mkExpr2 cmds
 
 cuboidWithRadius :: Int -> Cuboid
 cuboidWithRadius r = ((-r, r), (-r, r), (-r, r))
 
 -- Constructs a sum-of-unions expression.
 mkExpr :: [Command] -> (CuboidLU, AlternatingUnions)
-mkExpr = foldl go (mempty, []) . zip [0 ..]
+mkExpr = zip [0 ..] .> foldl go (mempty, [])
  where
   go (lu, cs) (tag, (on, cuboid)) =
     (lu <> pure cuboid, map (tag :) cs ++ extra)
     where extra = if even (length cs) == on then [[tag]] else [] -- A new union term is added if "on" and even, or "off" and odd.
 
 evalUnions :: CuboidLU -> Cuboid -> AlternatingUnions -> Int
-evalUnions lu scope = sum
-  . zipWith (\i ts -> (-1) ^ i * evalUnion True scope ts) [0 ..]
+evalUnions lu scope = zipWith (\i ts -> (-1) ^ i * evalUnion True scope ts) [0 ..] .> sum
  where
   -- Apply DFS to compute and sum intersections.
   evalUnion _   _   [] = 0 -- We've hit a leaf.
-  evalUnion add int ts = sum $ map explore $ init $ tails ts
+  evalUnion add int ts = ts |> tails |> init |> map explore |> sum
    where
     explore (tag : ts') = case intersection int (lu V.! tag) of
       Just c ->
@@ -82,7 +82,7 @@ evalUnions lu scope = sum
 
 -- Constructs a sum-of-unions expression.
 mkExpr2 :: [Command] -> (CuboidLU, AlternatingUnions')
-mkExpr2 cmds = (lookup', foldl go [] $ zip [0 ..] $ map fst cmds)
+mkExpr2 cmds = (lookup', cmds |> map fst |> zip [0..] |> foldl go [])
  where
   lookup' = V.fromList $ map snd cmds
   go cs (tag, on) = if even (length cs) == on then tag : cs else cs -- A new union term is added if "on" and even, or "off" and odd.
@@ -93,12 +93,10 @@ mkExpr2 cmds = (lookup', foldl go [] $ zip [0 ..] $ map fst cmds)
 --               e.g. [ 0, 2, 3, 4 ]
 
 evalUnions' :: CuboidLU -> Cuboid -> AlternatingUnions' -> Int
-evalUnions' lu scope = abs . sum . zipWith
-  (\i ts -> evalUnion (even i) scope ts)
-  [0 ..]
+evalUnions' lu scope = zipWith (\i ts -> evalUnion (even i) scope ts) [0 ..] .> sum .> abs
  where
   -- Apply DFS to compute and sum intersections.
-  evalUnion add int from = sum $ map explore [from .. length lu - 1]
+  evalUnion add int from = [from .. length lu - 1] |> map explore |> sum
    where
     explore tag = case intersection int (lu V.! tag) of
       Just c ->
@@ -108,7 +106,7 @@ evalUnions' lu scope = abs . sum . zipWith
       Nothing -> 0 -- Pruning. Bye bye branch.
 
 evalUnions'' :: CuboidLU -> AlternatingUnions' -> Int
-evalUnions'' lu = (\(x, _, _, _) -> x) . foldl' go (0, 0, length lu, [])
+evalUnions'' lu = foldl' go (0, 0, length lu, []) .> (\(x, _, _, _) -> x)
  where
   go (total, val, prevu, set) u =
     let (val', set') = foldr intersectSetAtIndex (val, set) [u .. prevu - 1]
@@ -116,9 +114,10 @@ evalUnions'' lu = (\(x, _, _, _) -> x) . foldl' go (0, 0, length lu, [])
   intersectSetAtIndex i (val, set) =
     let
       curr       = lu V.! i
-      intersects = map (second fromJust) $ filter (isJust . snd) $ map
-        (bimap not (intersection curr))
-        set
+      intersects = set
+                    |> map (bimap not (intersection curr))
+                    |> filter (isJust . snd)
+                    |> map (second fromJust)
       val' =
         val
           + evalCuboid curr
@@ -170,10 +169,12 @@ mkExpri = foldl go []
   go terms (on, cuboid) =
     terms ++ rest ++ (if on then [(True, cuboid)] else [])
    where
-    rest = map (second fromJust) $ filter (isJust . snd) $ map
-      (bimap not (intersection cuboid))
-      terms
+    rest = terms 
+            |> map (bimap not (intersection cuboid)) 
+            |> filter (isJust . snd) 
+            |> map (second fromJust)
 
 evalExpri :: [ITerm] -> Int
-evalExpri terms =
-  sum $ map (\(b, c) -> (if b then id else negate) $ evalCuboid c) terms
+evalExpri terms = terms
+                    |> map (\(b, c) -> (if b then 1 else (-1)) * evalCuboid c)
+                    |> sum

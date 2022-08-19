@@ -12,9 +12,9 @@ data PacketObj = Literal Int | Operands [Packet] deriving Show
 
 
 parse :: String -> Packet
-parse = subparse packet . transform
+parse = transform .> subparse packet
  where
-  transform = concatMap (\h -> toBinary $ read $ "0x" ++ [h])
+  transform = concatMap (\h -> "0x" ++ [h] |> read |> toBinary)
   toBinary n = printf "%04s" (showIntAtBase 2 ("01" !!) n "") -- A LUT is probably better.
 
 subparse :: Parser a -> String -> a
@@ -29,11 +29,14 @@ packet = do
   if typeID == 4
     then do
       bs <- collectWhile (bits 5) $ \(b : _) -> b == '1'
-      return $ Packet version typeID $ Literal $ fromBinary $ concatMap (drop 1) bs
+      return $ bs |> concatMap (drop 1) 
+                  |> fromBinary 
+                  |> Literal 
+                  |> Packet version typeID
     else do
       lenTypeID <- fromBinary <$> bits 1
       children <- operands lenTypeID
-      return $ Packet version typeID (Operands children)
+      return $ Operands children |> Packet version typeID
  where
   collectWhile p f = do -- Parse while condition is true.
     x <- p
@@ -58,7 +61,7 @@ part1 (Packet v _ obj) = case obj of
 part2 :: Packet -> Int
 part2 (Packet _ op obj) = case obj of
   Literal x -> x
-  Operands ps -> case op of
+  Operands ps -> ps |> map part2 |> case op of
       0 -> sum
       1 -> product
       2 -> minimum
@@ -67,7 +70,6 @@ part2 (Packet _ op obj) = case obj of
       6 -> luncurry (<)
       7 -> luncurry (==)
       _ -> undefined
-    $ map part2 ps
  where
   luncurry op' [a, b] = if op' a b then 1 else 0
   luncurry _   _      = undefined

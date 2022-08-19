@@ -6,7 +6,7 @@ import           Utils
 
 
 parse :: String -> [Int]
-parse s = map read $ splitOn "," s
+parse = splitOn "," .> map read
 
 part1 :: [Int] -> Int
 -- part1 xs = minimum [sum [abs (x - c) | x <- xs] | c <- [minimum xs .. maximum xs]]
@@ -23,5 +23,5 @@ part2 :: [Int] -> Int
 --   where dist x c = let a = abs (x - c) in a*(a + 1) `div` 2
 part2 xs = sum [ dist x mean | x <- xs ]
  where
-  mean = floor $ fromIntegral (sum xs) / fromIntegral (length xs)
+  mean = fromIntegral (sum xs) / fromIntegral (length xs) |> floor
   dist x c = let a = abs (x - c) in a * (a + 1) `div` 2
