@@ -99,6 +99,14 @@ fn part2(cmds: &Vec<Command>) -> u64 {
         }
     }
 
+    /**
+     * eval_union computes the number of points in the union of sets `u`.
+     *
+     * lookup: A lookup table of cuboids. Our sets will be represented as an array of indices (storing one i32 instead of six i32's).
+     * add: Whether the current iteration adds or subtracts the union.
+     * int: The current intersected cuboid.
+     * u: The set of cuboids in the current union.
+     */
     fn eval_union(lookup: &Vec<Cuboid>, add: bool, int: Cuboid, u: &[usize]) -> i64 {
         u.iter()
             .enumerate()
@@ -112,6 +120,7 @@ fn part2(cmds: &Vec<Command>) -> u64 {
                         rest - v
                     }
                 }
+                // No intersection. No need to evaluate deeper, since any intersection with the empty set will just be the empty set.
                 None => 0,
             })
             .sum::<i64>()
