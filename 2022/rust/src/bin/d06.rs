@@ -15,7 +15,12 @@ fn parse(contents: String) -> String {
 }
 
 fn find_first_window(xs: &String, n: usize) -> Option<usize> {
-    xs.as_bytes().windows(n).enumerate().filter(|(_, w)| w.iter().unique().count() == n).next().map(|x| x.0 + n)
+    xs.as_bytes()
+        .windows(n)
+        .enumerate()
+        .filter(|(_, w)| w.iter().unique().count() == n)
+        .next()
+        .map(|x| x.0 + n)
 }
 
 fn part1(xs: &String) -> usize {

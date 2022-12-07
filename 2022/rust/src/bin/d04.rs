@@ -23,13 +23,13 @@ fn parse(contents: String) -> Vec<((i32, i32), (i32, i32))> {
 }
 
 fn part1(xs: &Vec<((i32, i32), (i32, i32))>) -> usize {
-    xs.iter().filter(|((a1, b1), (a2, b2))| {
-        (a1 <= a2 && b2 <= b1) || (a2 <= a1 && b1 <= b2)
-    }).count()
+    xs.iter()
+        .filter(|((a1, b1), (a2, b2))| (a1 <= a2 && b2 <= b1) || (a2 <= a1 && b1 <= b2))
+        .count()
 }
 
 fn part2(xs: &Vec<((i32, i32), (i32, i32))>) -> usize {
-    xs.iter().filter(|((a1, b1), (a2, b2))| {
-        !(b1 < a2 || b2 < a1)
-    }).count()
+    xs.iter()
+        .filter(|((a1, b1), (a2, b2))| !(b1 < a2 || b2 < a1))
+        .count()
 }

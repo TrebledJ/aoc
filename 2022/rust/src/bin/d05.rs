@@ -27,9 +27,7 @@ fn parse(contents: String) -> (State, Vec<Command>) {
     let labels_str = ls.next().unwrap();
     let labels: Vec<char> = labels_str.chars().skip(1).step_by(4).collect();
 
-    let to_index = |label: char| {
-        labels.iter().position(|&l| l == label).unwrap()
-    };
+    let to_index = |label: char| labels.iter().position(|&l| l == label).unwrap();
 
     let mut st = State::new();
     st.resize(labels.len(), Vec::new());
@@ -62,9 +60,11 @@ fn parse(contents: String) -> (State, Vec<Command>) {
 
 fn part1((st, cmds): &(State, Vec<Command>)) -> String {
     let mut st1 = st.clone();
-    cmds.iter().for_each(|Command{num, from, to}| {
+    cmds.iter().for_each(|Command { num, from, to }| {
         (0..*num).for_each(|_| {
-            let x = st1[*from].pop().expect("expected char from stack, but got nothing");
+            let x = st1[*from]
+                .pop()
+                .expect("expected char from stack, but got nothing");
             st1[*to].push(x);
         })
     });
@@ -73,7 +73,7 @@ fn part1((st, cmds): &(State, Vec<Command>)) -> String {
 
 fn part2((st, cmds): &(State, Vec<Command>)) -> String {
     let mut st1 = st.clone();
-    cmds.iter().for_each(|Command{num, from, to}| {
+    cmds.iter().for_each(|Command { num, from, to }| {
         let chop = st1[*from].len() - num;
         let copy = st1[*from].clone();
         st1[*to].extend(&copy[chop..]);

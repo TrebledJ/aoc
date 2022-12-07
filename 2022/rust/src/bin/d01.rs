@@ -11,9 +11,9 @@ fn main() {
 
 fn parse(contents: String) -> Vec<i32> {
     contents
-            .split("\n\n")
-            .map(|s| s.lines().map(|x| x.parse::<i32>().unwrap()).sum())
-            .collect::<Vec<_>>()
+        .split("\n\n")
+        .map(|s| s.lines().map(|x| x.parse::<i32>().unwrap()).sum())
+        .collect::<Vec<_>>()
 }
 
 fn part1(nums: &Vec<i32>) -> i32 {

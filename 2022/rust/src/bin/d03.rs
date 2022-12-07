@@ -1,5 +1,5 @@
-use std::fs;
 use std::collections::HashSet;
+use std::fs;
 
 fn main() {
     let filename = "../input/d03.txt";
@@ -11,15 +11,12 @@ fn main() {
 }
 
 fn parse(contents: String) -> Vec<String> {
-    contents
-            .lines()
-            .map(String::from)
-            .collect::<Vec<_>>()
+    contents.lines().map(String::from).collect::<Vec<_>>()
 }
 
 fn prio(c: char) -> i32 {
     if c.is_ascii_uppercase() {
-       (c as i32) - 0x40 + 26
+        (c as i32) - 0x40 + 26
     } else {
         (c as i32) - 0x60
     }
@@ -31,7 +28,14 @@ fn part1(xs: &Vec<String>) -> i32 {
         let setb: HashSet<char> = b.chars().collect();
         *seta.intersection(&setb).into_iter().next().unwrap()
     }
-    xs.iter().map(|s| prio(common(s.chars().take(s.len() / 2).collect(), s.chars().skip(s.len() / 2).collect()))).sum()
+    xs.iter()
+        .map(|s| {
+            prio(common(
+                s.chars().take(s.len() / 2).collect(),
+                s.chars().skip(s.len() / 2).collect(),
+            ))
+        })
+        .sum()
 }
 
 fn part2(xs: &Vec<String>) -> i32 {
@@ -40,7 +44,14 @@ fn part2(xs: &Vec<String>) -> i32 {
         let seta: HashSet<char> = xs[i + 0].chars().collect();
         let setb: HashSet<char> = xs[i + 1].chars().collect();
         let setc: HashSet<char> = xs[i + 2].chars().collect();
-        let c = *seta.intersection(&setb).copied().collect::<HashSet<_>>().intersection(&setc).into_iter().next().unwrap();
+        let c = *seta
+            .intersection(&setb)
+            .copied()
+            .collect::<HashSet<_>>()
+            .intersection(&setc)
+            .into_iter()
+            .next()
+            .unwrap();
         sum += prio(c);
     }
     sum

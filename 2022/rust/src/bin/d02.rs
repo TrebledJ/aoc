@@ -13,12 +13,15 @@ fn main() {
 
 fn parse(contents: String) -> Vec<(RPS, RPS)> {
     contents
-            .lines()
-            .map(|s| {
-                let v = s.split(' ').map(|c| rps_from_str(c).unwrap()).collect::<Vec<_>>();
-                (v[0], v[1])
-            })
-            .collect::<Vec<_>>()
+        .lines()
+        .map(|s| {
+            let v = s
+                .split(' ')
+                .map(|c| rps_from_str(c).unwrap())
+                .collect::<Vec<_>>();
+            (v[0], v[1])
+        })
+        .collect::<Vec<_>>()
 }
 
 fn part1(rps: &Vec<(RPS, RPS)>) -> i32 {
@@ -34,7 +37,7 @@ fn rps_from_str(s: &str) -> Result<i32, String> {
         "A" | "X" => Ok(0),
         "B" | "Y" => Ok(1),
         "C" | "Z" => Ok(2),
-        _ => Err(String::from(s))
+        _ => Err(String::from(s)),
     }
 }
 
