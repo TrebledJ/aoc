@@ -1,7 +1,5 @@
-// use itertools::Itertools;
-// use std::cell::RefCell;
 use std::fs;
-// use std::rc::Rc;
+use itertools::Itertools;
 
 #[derive(PartialEq, Debug)]
 struct Dir {
@@ -60,6 +58,7 @@ fn main() {
     println!("part2: {}", part2(&xs));
 }
 
+// Jank AST parsing code.
 fn parse(contents: String) -> Dir {
     let mut root = Dir {
         name: "/".to_string(),
@@ -119,7 +118,7 @@ fn parse(contents: String) -> Dir {
     root
 }
 
-fn part1(fs: &Dir) -> u32 {
+fn get_directory_sizes(dir: &Dir) -> Vec<u32> {
     // Returns total size of current directory, and sizes of subdirectories.
     fn visit(Dir { name: _, contents }: &Dir) -> (u32, Vec<u32>) {
         let mut v = Vec::new();
@@ -139,11 +138,17 @@ fn part1(fs: &Dir) -> u32 {
         v.push(folder_total);
         (folder_total, v)
     }
-    let (_, v) = visit(fs);
-    // println!("{:?}", v);
-    v.iter().filter(|&&x| x <= 100000).sum()
+    visit(dir).1
 }
 
-fn part2(xs: &Dir) -> usize {
-    0
+fn part1(fs: &Dir) -> u32 {
+    get_directory_sizes(fs).iter().filter(|&&x| x <= 100000).sum()
+}
+
+fn part2(fs: &Dir) -> u32 {
+    let total_space = 70000000;
+    let target_space = 30000000;
+    let sizes = get_directory_sizes(fs);
+    let curr_used = sizes.last().unwrap();
+    *sizes.iter().sorted().filter(|&&x| total_space - curr_used + x >= target_space).next().unwrap()
 }
