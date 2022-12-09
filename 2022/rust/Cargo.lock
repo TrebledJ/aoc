@@ -33,6 +33,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 
 [[package]]
+name = "parser-combinators"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78bb29ec261522f813a51424c3f4e30f2560638fda08097ff9e19c8921f50261"
+
+[[package]]
 name = "regex"
 version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -54,5 +60,6 @@ name = "rust"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "parser-combinators",
  "regex",
 ]
