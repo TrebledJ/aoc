@@ -23,6 +23,8 @@ impl FromStr for Dir {
     }
 }
 
+type Point = (i32, i32);
+
 fn main() {
     let filename = "../input/d09.txt";
 
@@ -42,7 +44,13 @@ fn parse(contents: String) -> Vec<(Dir, u32)> {
         .collect()
 }
 
-type Point = (i32, i32);
+fn part1(xs: &Vec<(Dir, u32)>) -> u32 {
+    simulate(xs, 2)
+}
+
+fn part2(xs: &Vec<(Dir, u32)>) -> u32 {
+    simulate(xs, 10)
+}
 
 fn next((x, y): Point, dir: Dir) -> Point {
     match dir {
@@ -61,14 +69,6 @@ fn follow((hx, hy): Point, (tx, ty): Point) -> Point {
     } else {
         (tx, ty)
     }
-}
-
-fn part1(xs: &Vec<(Dir, u32)>) -> u32 {
-    simulate(xs, 2)
-}
-
-fn part2(xs: &Vec<(Dir, u32)>) -> u32 {
-    simulate(xs, 10)
 }
 
 /**
