@@ -28,8 +28,11 @@ impl Monkey {
     }
 
     pub fn send_to(&self, worry: u64) -> u64 {
-        let Decision { div, iftrue, iffalse } = self.test;
-        if worry % div == 0 { iftrue } else { iffalse }
+        if worry % self.test.div == 0 {
+            self.test.iftrue
+        } else {
+            self.test.iffalse
+        }
     }
 
     fn operate(&self, x: u64) -> u64 {
@@ -41,44 +44,53 @@ impl Monkey {
     }
 }
 
+fn monkey(s: &str) -> Option<Monkey> {
+    let mut ls = s.lines();
+    ls.next();
+    let (_, init_str) = ls.next()?.split_once(": ")?;
+    let items = init_str
+        .split(", ")
+        .map(|s| s.parse::<u64>().unwrap())
+        .collect::<Vec<_>>();
+
+    let (_, op_str) = ls.next()?.split_once("= ")?;
+    let op = match op_str {
+        "old * old" => Op::Sqr,
+        _ => {
+            let res = op_str.split(" ").collect::<Vec<_>>();
+            match res[1] {
+                "*" => Op::Mul(res[2].parse().unwrap()),
+                "+" => Op::Add(res[2].parse().unwrap()),
+                _ => panic!("unexpected op: {}", op_str),
+            }
+        }
+    };
+
+    let div = ls
+        .next()?
+        .split_once("divisible by ")?
+        .1
+        .parse::<u64>()
+        .unwrap();
+    let iftrue = ls.next()?.split_once("monkey ")?.1.parse::<u64>().unwrap();
+    let iffalse = ls.next()?.split_once("monkey ")?.1.parse::<u64>().unwrap();
+
+    Some(Monkey {
+        items,
+        op,
+        test: Decision {
+            div,
+            iftrue,
+            iffalse,
+        },
+    })
+}
 
 impl FromStr for Monkey {
     type Err = ();
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut ls = s.lines();
-        ls.next();
-        let (_, init_str) = ls.next().unwrap().split_once(": ").unwrap();
-        let items = init_str
-            .split(", ")
-            .map(|s| s.parse::<u64>().unwrap())
-            .collect::<Vec<_>>();
-
-        let (_, op_str) = ls.next().unwrap().split_once("= ").unwrap();
-        let op = match op_str {
-            "old * old" => Op::Sqr,
-            _ => {
-                let res = op_str.split(" ").collect::<Vec<_>>();
-                match res[1] {
-                    "*" => Op::Mul(res[2].parse().unwrap()),
-                    "+" => Op::Add(res[2].parse().unwrap()),
-                    _ => panic!("unexpected op: {}", op_str),
-                }
-            }
-        };
-
-        let div = ls.next().unwrap().split_once("divisible by ").unwrap().1.parse::<u64>().unwrap();
-        let iftrue = ls.next().unwrap().split_once("monkey ").unwrap().1.parse::<u64>().unwrap();
-        let iffalse = ls.next().unwrap().split_once("monkey ").unwrap().1.parse::<u64>().unwrap();
-
-        Ok(Monkey {
-            items,
-            op,
-            test: Decision {
-                div,
-                iftrue,
-                iffalse,
-            },
-        })
+        monkey(s).ok_or(())
     }
 }
 
@@ -92,7 +104,7 @@ fn main() {
 }
 
 fn parse(contents: String) -> Vec<Monkey> {
-    contents.split("\n\n").map(|s| s.parse::<Monkey>().unwrap()).collect()
+    contents.split("\n\n").map(|s| monkey(s).unwrap()).collect()
 }
 
 fn part1(xs: &Vec<Monkey>) -> i32 {
