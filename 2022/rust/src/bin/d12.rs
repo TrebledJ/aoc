@@ -1,5 +1,4 @@
-use priority_queue::PriorityQueue;
-use std::collections::{HashMap, HashSet, LinkedList};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
 
 type Point = (usize, usize);
@@ -43,86 +42,86 @@ fn parse(contents: String) -> Option<(Point, Point, usize, usize, Grid)> {
 }
 
 fn part1((start, end, w, h, grid): &(Point, Point, usize, usize, Grid)) -> u32 {
-    let mut queued = PriorityQueue::new();
-    queued.push(*start, 10000);
+    let (srcmap, _) = bfs(start, w, h, grid, |p| p == *end, false);
+    backtrack(&srcmap, end, start).len() as u32
+}
 
+fn part2((_, end, w, h, grid): &(Point, Point, usize, usize, Grid)) -> u32 {
+    let (srcmap, last) = bfs(end, w, h, grid, |p| grid[&p] == 0, true);
+    backtrack(&srcmap, &last, end).len() as u32
+}
+
+fn bfs(
+    start: &Point,
+    w: &usize,
+    h: &usize,
+    grid: &Grid,
+    check: impl Fn(Point) -> bool,
+    reversed: bool,
+) -> (HashMap<Point, Point>, Point) {
+    let mut queued = VecDeque::new();
+    queued.push_back(*start);
+
+    let mut visited = HashSet::new();
     let mut from = HashMap::<Point, Point>::new();
-    let mut gscore = HashMap::<Point, u32>::new();
 
-    gscore.insert(*start, 10000);
+    fn can_move(from_level: u32, to_level: u32) -> bool {
+        from_level + 1 >= to_level
+    }
 
-    // The lower the score, the better.
-    let score = |p: &Point| -> u32 {
-        // (grid[end] - grid[p]) *
-        dist(p, end) + 1
-    };
-
-    let can_move = |from_level: u32, to_level: u32| -> bool { from_level + 1 >= to_level };
     let neighbours = |(x, y): Point| -> Vec<Point> {
         [(x, y - 1), (x + 1, y), (x, y + 1), (x - 1, y)]
             .into_iter()
-            .filter(|(a, b)| *a < *w && *b < *h && can_move(grid[&(x, y)], grid[&(*a, *b)]))
+            .filter(|(a, b)| {
+                *a < *w
+                    && *b < *h
+                    && can_move(
+                        if !reversed {
+                            grid[&(x, y)]
+                        } else {
+                            grid[&(*a, *b)]
+                        },
+                        if !reversed {
+                            grid[&(*a, *b)]
+                        } else {
+                            grid[&(x, y)]
+                        },
+                    )
+            })
             .collect()
     };
 
+    let mut curr = (0, 0);
     while !queued.is_empty() {
-        let (curr, _) = queued.pop().unwrap();
-        // println!("curr: {curr:?}");
+        curr = queued.pop_front().unwrap();
+
+        if visited.contains(&curr) {
+            continue;
+        }
+
+        if check(curr) {
+            break;
+        }
+
+        visited.insert(curr);
 
         for n in neighbours(curr) {
-            let s = score(&n);
-            // println!("  n: {n:?} ({:?}) / score: {s:?}", grid[&n]);
-            let new_gscore = gscore.get(&curr).unwrap() + s;
-            if !gscore.contains_key(&n) || new_gscore < *gscore.get(&n).unwrap() {
-                queued.push(n, 10000 - s);
-                gscore.insert(n, new_gscore);
+            if !visited.contains(&n) {
+                queued.push_back(n);
                 from.insert(n, curr);
             }
         }
     }
 
-    // print_dirmap(&from, *w, *h);
+    (from, curr)
+}
 
-    // println!("\nbacktracking");
-    let mut curr = end.clone();
-    let mut count = 0;
-    loop {
-        // println!("{curr:?}");
-        curr = *from.get(&curr).unwrap();
-        count += 1;
-        if curr == *start {
-            break;
-        }
+fn backtrack(srcmap: &HashMap<Point, Point>, start: &Point, target: &Point) -> Vec<Point> {
+    let mut vec = Vec::new();
+    let mut curr = start.clone();
+    while curr != *target {
+        curr = *srcmap.get(&curr).unwrap();
+        vec.push(curr);
     }
-    count
-}
-
-fn print_dirmap(xs: &HashMap<Point, Point>, w: usize, h: usize) {
-    let invmap = xs.iter().map(|(k, v)| (v, k)).collect::<HashMap<_, _>>();
-    for y in 0..h {
-        for x in 0..w {
-            let &&(tox, toy) = invmap.get(&(x, y)).unwrap_or(&&(x, y));
-            let dir = if tox == x + 1 {
-                '>'
-            } else if tox == x - 1 {
-                '<'
-            } else if toy == y + 1 {
-                'v'
-            } else if toy == y - 1 {
-                '^'
-            } else {
-                '.'
-            };
-            print!("{}", dir);
-        }
-        println!("");
-    }
-}
-
-fn part2((start, end, w, h, grid): &(Point, Point, usize, usize, Grid)) -> u32 {
-    0
-}
-
-fn dist(&(x1, y1): &Point, &(x2, y2): &Point) -> u32 {
-    (x1.abs_diff(x2) + y1.abs_diff(y2)) as u32
+    vec
 }
